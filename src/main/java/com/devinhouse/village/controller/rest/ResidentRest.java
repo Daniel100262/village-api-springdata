@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devinhouse.village.model.dao.InsertResidentResponseType;
-import com.devinhouse.village.model.transport.ResidentDTO;
+import com.devinhouse.village.model.dao.Resident;
 import com.devinhouse.village.service.ResidentService;
 
 @RestController
@@ -28,50 +28,50 @@ public class ResidentRest {
 	
 	
 	@GetMapping("/list-all")
-	public List<ResidentDTO> listAvengers() throws SQLException{
+	public List<Resident> listAvengers() {
 		return residentService.listResidents();
 	}
 	
 	@GetMapping("/listbyid/{id}")
-	public ResidentDTO getResident(@PathVariable("id") Integer id) throws SQLException{
+	public Resident getResident(@PathVariable("id") Integer id) {
 		return residentService.getResidentById(id);
 	}
 	
 	@GetMapping("/listbyname")
-	public List<ResidentDTO> getResidentByName(@RequestParam("name") String name) throws SQLException{
+	public List<Resident> getResidentByName(@RequestParam("name") String name) {
 		System.out.println("Procurando por: "+name);
 		return residentService.getResidentByName(name);
 	}
 	
 	@GetMapping("/listbyage")
-	public List<ResidentDTO> getResidentByAge(@RequestParam("ageGreaterThanOrEqualTo") Integer age) throws SQLException{
+	public List<Resident> getResidentByAge(@RequestParam("ageGreaterThanOrEqualTo") Integer age) {
 		return residentService.getResidentByAge(age);
 	}
 	
 	@GetMapping("/listbymonth")
-	public List<ResidentDTO> getResidentByMonth(@RequestParam("month") Integer month) throws SQLException{
+	public List<Resident> getResidentByMonth(@RequestParam("month") Integer month) {
 		return residentService.getResidentByMonth(month);
 	}
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<String> addResident(@RequestBody ResidentDTO resident) throws SQLException{
+	public ResponseEntity<String> addResident(@RequestBody Resident resident) throws SQLException{
 		
-		Integer response = this.residentService.create(resident);
+		Integer sucessfullCreated = this.residentService.create(resident);
 		
-		if (response == InsertResidentResponseType.DUPLICATED.getResponseCode()) {
+		if (sucessfullCreated == InsertResidentResponseType.DUPLICATED.getResponseCode()) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body("Cadastro duplicado!");
 		} 
 		
-		else if (response == InsertResidentResponseType.SUCCESS_ADDED.getResponseCode()) {
+		else if (sucessfullCreated == InsertResidentResponseType.SUCCESS_ADDED.getResponseCode()) {
 			return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso!");
 		} 
 		
-		else if (response.equals(InsertResidentResponseType.INVALID_DATA.getResponseCode())) {
+		else if (sucessfullCreated.equals(InsertResidentResponseType.INVALID_DATA.getResponseCode())) {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Dados invalidos!");
 		} 	
 		
-		else if (response.equals(InsertResidentResponseType.INVALID_PATTERN.getResponseCode())) {
+		else if (sucessfullCreated.equals(InsertResidentResponseType.INVALID_PATTERN.getResponseCode())) {
 			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("A senha informada não esta em conformidade com os padrões aceitos!");
 		}
 		

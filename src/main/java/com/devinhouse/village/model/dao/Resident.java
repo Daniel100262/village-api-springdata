@@ -3,8 +3,10 @@ package com.devinhouse.village.model.dao;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Set;
 
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,10 +31,17 @@ public class Resident implements Serializable {
 	private String email;
 	
 	@OneToOne
-	private Integer userid;
+	private User user;
+	
+	@ElementCollection
 	private Set<String> roles;
 	
-	
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -87,16 +96,14 @@ public class Resident implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public Integer getUserid() {
-		return userid;
-	}
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
 	public Set<String> getRoles() {
 		return roles;
 	}
 	public void setRoles(Set<String> roles) {
 		this.roles = roles;
 	}
+	
+	public static final Comparator<Resident> compareByIncome = (Resident r1, Resident r2) -> {
+        return r1.getIncome().compareTo(r2.getIncome());
+    };
 }

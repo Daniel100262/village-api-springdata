@@ -11,82 +11,77 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.model.dao.InsertResidentResponseType;
-import com.devinhouse.village.model.dao.ResidentDAO;
-import com.devinhouse.village.model.transport.ResidentDTO;
+import com.devinhouse.village.model.dao.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
+import com.devinhouse.village.repositories.ResidentRepository;
 
 @Service
 public class ResidentService {
 	
 	@Autowired
-	private ResidentDAO residentDAO;
+	private ResidentRepository residentRepository;
 	
 	@Autowired UserService userService;
 	
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
 
-	public ResidentService(ResidentDAO residentDAO) {
-		this.residentDAO = residentDAO;
+	public ResidentService(ResidentRepository residentRepository) {
+		this.residentRepository = residentRepository;
 	}
 
-	public ResidentDAO getResidentDAO() {
-		return residentDAO;
+	public ResidentRepository getResident() {
+		return residentRepository;
 	}
 
 	
-	public void setResidentDAO(ResidentDAO residentDAO) {
-		this.residentDAO = residentDAO;
+	public void setResident(ResidentRepository residentRepository) {
+		this.residentRepository = residentRepository;
 	}
 	
-	public List<ResidentDTO> listResidents() throws SQLException {
-		return this.residentDAO.listAllResidents(false);
+	public List<Resident> listResidents() {
+		return this.residentRepository.findAll();
 	}
 
-	public BigDecimal getVillageCosts() throws SQLException {
-		List<ResidentDTO> residents = this.residentDAO.listAllResidents(true);
+	public BigDecimal getVillageCosts(){
+		List<Resident> residents = this.residentRepository.findAll();
 		BigDecimal costsSum = BigDecimal.valueOf(0);
-		for (ResidentDTO resident : residents) {
+		for (Resident resident : residents) {
 			costsSum = costsSum.add(resident.getIncome());
 		}
 		return costsSum;
 	}
-	
-	
-	public List<ResidentDTO> allResidentsWithAllFields() throws SQLException {
-		return this.residentDAO.listAllResidents(true);
-		
+
+	public Resident getResidentById(Integer id) {
+		return residentRepository.getById(id);
 	}
 
-	public ResidentDTO getResidentById(Integer id) throws SQLException {
-		return residentDAO.getResidentById(id);
+	public List<Resident> getResidentByName(String name) {
+		return residentRepository.getResidentsByName(name);
 	}
 
-	public List<ResidentDTO> getResidentByName(String name) throws SQLException {
-		return residentDAO.getResident(name);
-	}
-
-	public Integer create(ResidentDTO resident) throws SQLException {
+	public Integer create(Resident resident) {
 		if (resident == null) {
 			throw new IllegalArgumentException("O morador está nulo!");
-		} else if (isResidentAlreadyOnList(this.residentDAO.listAllResidents(true), resident)) {
+		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
 			throw new IllegalArgumentException("O morador já existe na lista!");
 		}
 	
 		Integer returnCode = InsertResidentResponseType.UNKNOW_ERROR.getResponseCode();
 		
-		userService.create(resident);
+		userService.create(resident); //TODO: arrumar userService
 		
 		resident.setAge(calculateAge(resident.getBornDate(), LocalDate.now()));
 		
 		try {
-			returnCode = this.residentDAO.create(resident);
-			System.out.println("Codigo retornado: "+returnCode); //TODO: Remover isso
+			resident = this.residentRepository.save(resident);
+			System.out.println("Codigo do resident adicionado retornado: "+resident.getId()); //TODO: Remover isso
+			returnCode = InsertResidentResponseType.SUCCESS_ADDED.getResponseCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			userService.deleteUserById(resident.getUserid());
-			
+			userService.deleteUserById(resident.getUser().getId());
 		}
 
 		return returnCode;
@@ -101,15 +96,26 @@ public class ResidentService {
         }
     }
 
-	private boolean isResidentAlreadyOnList(List<ResidentDTO> residents, ResidentDTO resident) {
+	private boolean isResidentAlreadyOnList(List<Resident> residents, Resident resident) {
 		return residents.stream().anyMatch(residentInList -> residentInList.equals(resident));
 	}
 
 	public Boolean delete(Integer id) {
 		if (id == null) {
-			throw new IllegalArgumentException("O morador está nulo!");
+			throw new NullResidentException("O morador está nulo!");
 		}
-		return this.residentDAO.delete(id);
+		
+		Boolean sucessfullDeleted = false;
+		
+		if(this.residentRepository.existsById(id)) {
+			this.residentRepository.deleteById(id);
+			sucessfullDeleted = true;
+			return sucessfullDeleted;
+		} else {
+			return sucessfullDeleted;
+		}
+		
+		
 	}
 	
 	 public static boolean isValidPassword(String password) {
@@ -117,32 +123,32 @@ public class ResidentService {
 	        return pattern.matcher(password).matches();
 	 }
 
-	public List<ResidentDTO> getResidentByAge(Integer age) throws SQLException {
+	public List<Resident> getResidentByAge(Integer age) {
 		
 		if(age.equals(null)) {
 			throw new IllegalArgumentException("A idade está nula!");
 		}
 		
-		return this.residentDAO.getResidentByAge(age);
+		return this.residentRepository.getResidentsByAge(age);
 	}
 
-	public List<ResidentDTO> getResidentByMonth(Integer month) throws SQLException {
+	public List<Resident> getResidentByMonth(Integer month) {
 		if(month.equals(null)) {
 			throw new IllegalArgumentException("O mês está nulo!");
 		}
-		return this.residentDAO.getResidentByMonth(month);
+		return this.residentRepository.getResidentsByMonth(month);
 	}
 
 	//TODO: Refatorar
 	public VillageReportDTO genereteReport() throws SQLException {
-		List<ResidentDTO> residents = this.residentDAO.listAllResidents(true);
+		List<Resident> residents = this.residentRepository.findAll();
 	
 	        final BigDecimal villageTotalCost = residents.stream().reduce(
 	                BigDecimal.ZERO,(accumulator, resident) -> resident.getIncome().add((accumulator)),
 	                BigDecimal::add
 	        );
 	        final Float cost = budgetOfVillage - villageTotalCost.floatValue();
-	        final ResidentDTO villagerWithHigherCost = residents.stream().max(ResidentDTO.compareByIncome).orElse(null);
+	        final Resident villagerWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
 
 
 	        final String villagerName = String.format("%s %s", villagerWithHigherCost.getFirstName(),villagerWithHigherCost.getLastName());
