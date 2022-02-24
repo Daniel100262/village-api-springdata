@@ -35,10 +35,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
 		String header = request.getHeader("Authorization");
 		if (header != null && header.startsWith("Bearer ")) {
+			System.out.println("Cabeçalho token authorization: "+header.substring(7));
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = getAuthentication(
 					header.substring(7));
+			
 			if (usernamePasswordAuthenticationToken != null) {
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			} else {
+				System.out.println("usernamePasswordAuthenticationToken veio nulo em JWTAuthorizationFilter linha 42");
 			}
 		}
 		chain.doFilter(request, response);
@@ -48,6 +52,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		if (jwtUtil.validToken(token)) {
 			String email = jwtUtil.getEmailByToken(token);
 			UserDetails user = userService.loadUserByUsername(email);
+			System.out.println("UsernamePasswordAuthenticationToken Email: "+email+" user: "+user);
 			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 					user.getUsername(), null, user.getAuthorities());
 			return usernamePasswordAuthenticationToken;

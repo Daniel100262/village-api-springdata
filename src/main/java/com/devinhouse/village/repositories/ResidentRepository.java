@@ -15,22 +15,22 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
-    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstname, r.lastname) FROM Resident r")
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstName, r.lastName) FROM Resident r")
     List<Resident> getResidentsWithFilteredFields(Integer id);
 	
 	@Transactional
     @Modifying
-    @Query("select id, firstname, lastname from resident where firstname ilike '%:name%' or lastname ilike  '%:name%'")
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, firstName, r.lastName) FROM Resident r where r.firstName like upper('%:name%') or r.lastName like upper('%:name%')")
     List<Resident> getResidentsByName(String name);
 	
 	@Transactional
     @Modifying
-    @Query("select id, firstname, lastname from resident where age > :age ")
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstName, r.lastName) FROM Resident r where r.age > :age ")
     List<Resident> getResidentsByAge(Integer age);
 	
 	@Transactional
     @Modifying
-    @Query("select id, firstname, lastname from resident where extract (month from borndate) = :month ")
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstName, r.lastName) FROM Resident r where extract (month from bornDate) = :month ")
 	List<Resident> getResidentsByMonth(Integer month);
 	
 	

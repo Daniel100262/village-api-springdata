@@ -10,12 +10,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Repository;
 
 import com.devinhouse.village.model.transport.UserDTO;
 
-
-@Repository
 public class UserDAO {
 
 	

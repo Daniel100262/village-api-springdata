@@ -14,40 +14,39 @@ import org.springframework.stereotype.Service;
 
 import com.devinhouse.village.exception.NullUserException;
 import com.devinhouse.village.model.dao.Resident;
-import com.devinhouse.village.model.dao.User;
-import com.devinhouse.village.model.dao.UserDAO;
+import com.devinhouse.village.model.dao.UserCredential;
 import com.devinhouse.village.model.dao.UserSpringSecurity;
-import com.devinhouse.village.model.transport.UserDTO;
-import com.devinhouse.village.repositories.UserRepository;
+import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class UserService implements UserDetailsService {
 
-	private UserDAO userDAO;
+	private UserCredentialRepository userRepository;
 
-	private UserRepository userRepository;
-
-	public User getUserByEmail(String email) {
-		return userRepository.getUserByEmail(email);
-	}
-
-	public User getUserById(Integer id) {
+	public UserCredential getUserById(Integer id) {
 		return userRepository.getById(id);
+	}
+	
+	public UserService(UserCredentialRepository userRepository) {
+		this.userRepository = userRepository;
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException { // TODO: Modificado aqui
-		User user = null;
-		try {
-			user = getUserByEmail(username);
-		} catch (NullPointerException e) {
-			System.out.println("Deu null pointer no load user by username");
-			e.printStackTrace();
-		}
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException { // TODO: Modificado aqui
+		UserCredential user = null;
+		// try {
+		System.out.println("Usuário --> " + userRepository.getUserByEmail(email).getEmail());
+		System.out.println("Senha --> " + userRepository.getUserByEmail(email).getPassword());
+		user = userRepository.getUserByEmail(email);
+
+//		} catch (NullPointerException e) {
+//			//System.out.println("Deu null pointer no load user by username");
+//			throw new NullResidentException("Nenhum morador encontrado com o e-mail: "+email);
+//		}
 		if (user == null) {
-			throw new UsernameNotFoundException(username);
+			throw new UsernameNotFoundException(email);
 		}
-		return new UserSpringSecurity(user.getEmail(), user.getPassword(), user.getRoles());
+		return new UserSpringSecurity(user.getEmail(), user.getPassword(), user.getUserRoles());
 	}
 
 	public static UserSpringSecurity authenticated() {
@@ -60,7 +59,8 @@ public class UserService implements UserDetailsService {
 	}
 
 	public void create(Resident resident) {
-		if (resident.getEmail() == null || resident.getPassword() == null || resident.getRoles() == null) {
+		if (resident.getEmail() == null || resident.getPassword() == null
+				|| resident.getUser().getUserRoles() == null) {
 			throw new IllegalArgumentException("O usuario contém parâmetros nulos!"); // TODO: Remover
 		}
 
@@ -78,12 +78,12 @@ public class UserService implements UserDetailsService {
 			throw new NullUserException(message.toString());
 		}
 
-		User createdUser = this.userRepository.save(resident.getUser());
+		UserCredential createdUser = this.userRepository.save(resident.getUser());
 
 		resident.setUser(createdUser);
 	}
 
-	public void updateUser(User user, String newPassword) throws SQLException {
+	public void updateUser(UserCredential user, String newPassword) throws SQLException {
 		userRepository.save(user);
 	}
 
@@ -94,10 +94,4 @@ public class UserService implements UserDetailsService {
 		return matcher.matches();
 	}
 
-	public Boolean deleteUserById(Integer userid) {
-		if (userid == null) {
-			throw new IllegalArgumentException("O usuario está nulo!");
-		}
-		return this.userDAO.deleteByUserId(userid);
-	}
 }

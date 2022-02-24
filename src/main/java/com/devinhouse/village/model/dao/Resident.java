@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.Set;
 
-import javax.persistence.ElementCollection;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
@@ -30,16 +30,24 @@ public class Resident implements Serializable {
 	private String password;
 	private String email;
 	
-	@OneToOne
-	private User user;
+	@OneToOne(cascade=CascadeType.MERGE)
+	@JoinColumn(name = "user_id")
+	private UserCredential user;	
 	
-	@ElementCollection
-	private Set<String> roles;
+	public Resident() {
+		
+	}
 	
-	public User getUser() {
+	public Resident(Integer id, String firstName, String lastName) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
+	public UserCredential getUser() {
 		return user;
 	}
-	public void setUser(User user) {
+	public void setUser(UserCredential user) {
 		this.user = user;
 	}
 	public Integer getId() {
@@ -95,12 +103,6 @@ public class Resident implements Serializable {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	public Set<String> getRoles() {
-		return roles;
-	}
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
 	}
 	
 	public static final Comparator<Resident> compareByIncome = (Resident r1, Resident r2) -> {

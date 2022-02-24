@@ -42,6 +42,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 					credentials.getEmail(), credentials.getPassword(), new ArrayList<>());
 			Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+			System.out.println("Passou no tenta auth");
 			return authenticate;
 		} catch (IOException e) {
 			throw new RuntimeException(e);

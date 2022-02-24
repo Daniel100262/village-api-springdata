@@ -7,7 +7,6 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,19 +15,23 @@ import com.devinhouse.village.model.dao.InsertResidentResponseType;
 import com.devinhouse.village.model.dao.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
+import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class ResidentService {
 	
-	@Autowired
+	private UserCredentialRepository userCredentialRepository;
+	
 	private ResidentRepository residentRepository;
 	
-	@Autowired UserService userService;
+	UserService userService;
 	
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
 
-	public ResidentService(ResidentRepository residentRepository) {
+	public ResidentService(UserService userService, UserCredentialRepository userCredentialRepository, ResidentRepository residentRepository) {
+		this.userService = userService;
+		this.userCredentialRepository = userCredentialRepository;
 		this.residentRepository = residentRepository;
 	}
 
@@ -81,7 +84,8 @@ public class ResidentService {
 			returnCode = InsertResidentResponseType.SUCCESS_ADDED.getResponseCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			userService.deleteUserById(resident.getUser().getId());
+			userCredentialRepository.deleteById(returnCode);
+			//userService.deleteUserById(resident.getUser().getId());
 		}
 
 		return returnCode;

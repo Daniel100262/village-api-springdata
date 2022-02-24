@@ -1,33 +1,74 @@
 package com.devinhouse.village.model.dao;
 
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class User implements Serializable {
+public class UserCredential implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue
 	private Integer id;
+	
 	private String email;
 	private String password;
-	private Set<String> roles = new HashSet<String>();
-	@OneToOne
+	
+	@OneToMany(fetch = FetchType.EAGER,mappedBy = "userCredential", cascade = CascadeType.REMOVE)
+    @JsonIgnore
+	private List<UserRole> userRoles = new ArrayList<>();
+	
+	@OneToOne(mappedBy = "user")
+	@JsonIgnore
 	private Resident resident;
+	
+	public UserCredential() {
+		
+	}
 
-	public User(String email, String password, Set<String> roles) {
+	public UserCredential(String email, String password, List<UserRole> userRoles) {
 		this.email = email;
 		this.password = password;
-		this.roles = roles;
+		this.userRoles = userRoles;
+	}
+	
+	public UserCredential(Integer id, String email, List<UserRole> userRoles, Resident resident) {
+		this.id = id;
+		this.email = email;
+		this.userRoles = userRoles;
+		this.resident = resident;
+	}
+	
+	
+
+	public Resident getResident() {
+		return resident;
+	}
+
+	public void setResident(Resident resident) {
+		this.resident = resident;
+	}
+
+
+	public List<UserRole> getUserRoles() {
+		return userRoles;
+	}
+
+	public void setUserRoles(List<UserRole> userRoles) {
+		this.userRoles = userRoles;
 	}
 
 	public Integer getId() {
@@ -38,22 +79,6 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	public Resident getResident() {
-		return resident;
-	}
-
-	public void setResident(Resident resident) {
-		this.resident = resident;
-	}
-
-	public Set<String> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
-	}
-
 	public String getPassword() {
 		return password;
 	}
@@ -62,11 +87,11 @@ public class User implements Serializable {
 		this.password = password;
 	}
 
-	public User(String email) {
+	public UserCredential(String email) {
 		this.email = email;
 	}
 
-	public User(String email, String password) {
+	public UserCredential(String email, String password) {
 		this.email = email;
 		this.password = password;
 	}
@@ -92,7 +117,7 @@ public class User implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		User other = (User) obj;
+		UserCredential other = (UserCredential) obj;
 		return Objects.equals(email, other.email);
 	}
 

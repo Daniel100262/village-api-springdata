@@ -15,12 +15,10 @@ import java.util.InputMismatchException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import com.devinhouse.village.model.transport.ResidentDTO;
 import com.devinhouse.village.service.UserService;
 
-@Repository
 public class ResidentDAO {
 	
 	public List<ResidentDTO> listAllResidents(boolean withAllFields) throws SQLException {
@@ -285,10 +283,7 @@ public class ResidentDAO {
 			stmt.execute("delete from resident where id="+id);
 			
 			System.out.println("O id do user é: "+resident.getUserid());
-			
-			userService.deleteUserById(resident.getUserid());
-			
-			
+
 			
 			
 			System.out.println("Consulta executada: ");
