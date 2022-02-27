@@ -23,12 +23,6 @@ public class UserSpringSecurity implements UserDetails{
 		this.password = password;
 		this.authorities = authorities;
 	}
-	
-//	public UserSpringSecurity(String email, String password, Set<String>  authorities) {
-//		this.email = email;
-//		this.password = password;
-//		this.authorities = authorities.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toSet());
-//	}
 
 	public UserSpringSecurity(String email, String password, List<UserRole> userRoles) {
 		this.email = email;

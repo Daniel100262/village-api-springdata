@@ -20,8 +20,11 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
+    //@Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, firstName, r.lastName) FROM Resident r where lower(r.firstName) like lower(concat('%', :name,'%'))")
+	
     @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, firstName, r.lastName) FROM Resident r where r.firstName like upper('%:name%') or r.lastName like upper('%:name%')")
     List<Resident> getResidentsByName(String name);
+
 	
 	@Transactional
     @Modifying
@@ -32,6 +35,16 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
     @Modifying
     @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstName, r.lastName) FROM Resident r where extract (month from bornDate) = :month ")
 	List<Resident> getResidentsByMonth(Integer month);
+	
+	@Transactional
+    @Modifying
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, r.firstName, r.lastName) FROM Resident r")
+	List<Resident> findAllFiltered();
+	
+	@Transactional
+    @Modifying
+    @Query("SELECT new com.devinhouse.village.model.dao.Resident(r.firstName, r.lastName, r.age, r.bornDate, r.income, r.cpf, r.user) FROM Resident r WHERE r.id = :id")
+	List<Resident> findByIdFiltered(Integer id);
 	
 	
 }

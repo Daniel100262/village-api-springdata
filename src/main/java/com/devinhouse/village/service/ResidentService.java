@@ -1,7 +1,6 @@
 package com.devinhouse.village.service;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -45,7 +44,7 @@ public class ResidentService {
 	}
 	
 	public List<Resident> listResidents() {
-		return this.residentRepository.findAll();
+		return this.residentRepository.findAllFiltered();
 	}
 
 	public BigDecimal getVillageCosts(){
@@ -58,7 +57,7 @@ public class ResidentService {
 	}
 
 	public Resident getResidentById(Integer id) {
-		return residentRepository.getById(id);
+		return residentRepository.findByIdFiltered(id).get(0);
 	}
 
 	public List<Resident> getResidentByName(String name) {
@@ -70,11 +69,15 @@ public class ResidentService {
 			throw new IllegalArgumentException("O morador está nulo!");
 		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
 			throw new IllegalArgumentException("O morador já existe na lista!");
+		} else if (resident.getUser().equals(null)) {
+			
 		}
 	
 		Integer returnCode = InsertResidentResponseType.UNKNOW_ERROR.getResponseCode();
 		
-		userService.create(resident); //TODO: arrumar userService
+		if(resident.getUser().isValid()) {
+			userService.create(resident); //TODO: arrumar userService
+		}
 		
 		resident.setAge(calculateAge(resident.getBornDate(), LocalDate.now()));
 		
@@ -90,7 +93,6 @@ public class ResidentService {
 
 		return returnCode;
 	}
-	
 	
 	private int calculateAge(LocalDate bornDate, LocalDate currentDate) {
         if ((bornDate != null) && (currentDate != null)) {
@@ -122,7 +124,7 @@ public class ResidentService {
 		
 	}
 	
-	 public static boolean isValidPassword(String password) {
+	 public boolean hasValidPassword(String password) {
 	        final Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
 	        return pattern.matcher(password).matches();
 	 }
@@ -144,7 +146,7 @@ public class ResidentService {
 	}
 
 	//TODO: Refatorar
-	public VillageReportDTO genereteReport() throws SQLException {
+	public VillageReportDTO genereteReport() {
 		List<Resident> residents = this.residentRepository.findAll();
 	
 	        final BigDecimal villageTotalCost = residents.stream().reduce(

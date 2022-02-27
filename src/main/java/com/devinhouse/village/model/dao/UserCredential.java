@@ -13,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.devinhouse.village.exception.InvalidCredentialPropertyException;
+import com.devinhouse.village.exception.NullUserException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -119,6 +121,27 @@ public class UserCredential implements Serializable {
 			return false;
 		UserCredential other = (UserCredential) obj;
 		return Objects.equals(email, other.email);
+	}
+
+	public Boolean isValid() {
+		if(equals(null)) {
+			throw new NullUserException("Usuário nulo ou não informado!");
+		}
+		
+		if(getEmail().equals(null) || getEmail().length() < 1) {
+			throw new InvalidCredentialPropertyException("A propriedade \"Email \"está nula ou não foi preenchida corretamente!");
+		}
+		
+		if(getPassword().equals(null) || getPassword().length() < 1) {
+			throw new InvalidCredentialPropertyException("A propriedade \"Email \"está nula ou não foi preenchida corretamente!");
+		}
+		
+		if(getUserRoles().equals(null) || getUserRoles().size() < 1) {
+			
+		}
+		
+		
+		return true;
 	}
 
 }
