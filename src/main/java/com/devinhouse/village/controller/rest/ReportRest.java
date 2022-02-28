@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devinhouse.village.model.transport.VillageReportDTO;
+import com.devinhouse.village.rabbitmq.Sender;
 import com.devinhouse.village.service.ResidentService;
 import com.devinhouse.village.util.ExportPDF;
 import com.lowagie.text.DocumentException;
@@ -42,7 +44,16 @@ public class ReportRest {
 
 		ExportPDF exporter = new ExportPDF(report);
 		exporter.export(response);
-
+	}
+	
+	@Autowired
+    private Sender queueSender;
+    
+    @PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("/generate/pdf/email")
+	public void exportToPDF(@RequestParam("email") String emailDestination) throws DocumentException, IOException {
+		VillageReportDTO report = residentService.genereteReport(emailDestination);
+		queueSender.send(report);
 	}
 
 }

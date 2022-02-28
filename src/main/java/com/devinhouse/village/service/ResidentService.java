@@ -13,7 +13,6 @@ import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.model.dao.InsertResidentResponseType;
 import com.devinhouse.village.model.dao.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
-import com.devinhouse.village.rabbitmq.service.RabbitmqService;
 import com.devinhouse.village.repositories.ResidentRepository;
 import com.devinhouse.village.repositories.UserCredentialRepository;
 
@@ -150,6 +149,22 @@ public class ResidentService {
 	}
 
 	//TODO: Refatorar
+	public VillageReportDTO genereteReport(String emailDestination) {
+		List<Resident> residents = this.residentRepository.findAll();
+	
+	        final BigDecimal villageTotalCost = residents.stream().reduce(
+	                BigDecimal.ZERO,(accumulator, resident) -> resident.getIncome().add((accumulator)),
+	                BigDecimal::add
+	        );
+	        final Float cost = budgetOfVillage - villageTotalCost.floatValue();
+	        final Resident villagerWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
+
+
+	        final String villagerName = String.format("%s %s", villagerWithHigherCost.getFirstName(),villagerWithHigherCost.getLastName());
+	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, villagerName, emailDestination);
+	
+	}
+	
 	public VillageReportDTO genereteReport() {
 		List<Resident> residents = this.residentRepository.findAll();
 	

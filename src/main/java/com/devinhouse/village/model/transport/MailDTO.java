@@ -1,6 +1,5 @@
 package com.devinhouse.village.model.transport;
 
-
 public class MailDTO {
 
 	private String email;
@@ -12,6 +11,5 @@ public class MailDTO {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
 	
 }
