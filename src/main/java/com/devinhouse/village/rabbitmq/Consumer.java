@@ -5,8 +5,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.devinhouse.village.model.transport.VillageReportDTO;
-import com.devinhouse.village.rabbitmq.service.RabbitmqService;
-
+import com.devinhouse.village.service.RabbitmqService;
 
 @Component
 public class Consumer {
@@ -16,8 +15,6 @@ public class Consumer {
 
     @RabbitListener(queues = {"${queue.name}"})
     public void receive(@Payload VillageReportDTO report) throws Exception {
-    	rabbitmqService.sendReportByEmail("daniel100262@hotmail.com", report);
-
+    	rabbitmqService.sendReportByEmail(report.getReportEmailDestination(), report);
     }
-
 }
