@@ -1,7 +1,7 @@
 package com.devinhouse.village.model.dao;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -17,16 +17,20 @@ public class UserSpringSecurity implements UserDetails{
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public UserSpringSecurity(String email, String password, Collection<? extends GrantedAuthority> authorities) {
-		super();
+		
+		System.out.println("Passou no construtor ruim ##################");
 		this.email = email;
 		this.password = password;
 		this.authorities = authorities;
 	}
-	
-	public UserSpringSecurity(String email, String password, Set<String>  authorities) {
+
+	public UserSpringSecurity(String email, String password, List<UserRole> userRoles) {
 		this.email = email;
 		this.password = password;
-		this.authorities = authorities.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toSet());
+		//this.authorities = userRoles;
+		System.out.println("Role --> "+userRoles.get(0).getAuthority());
+		System.out.println("Passou no user spring security ##################");
+		this.authorities = userRoles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getAuthority())).collect(Collectors.toSet());
 	}
 
 	@Override

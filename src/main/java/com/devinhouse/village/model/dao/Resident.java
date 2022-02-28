@@ -3,36 +3,84 @@ package com.devinhouse.village.model.dao;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.Comparator;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Resident implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
     @Id
     @GeneratedValue
+    @JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer id;
     
+    @JsonInclude(JsonInclude.Include.NON_NULL)
 	private String firstName;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
 	private String lastName;
-	private Integer age;
-	private LocalDate bornDate;
-	private BigDecimal income;
-	private String cpf;
-	private String password;
-	private String email;
 	
-	@OneToOne
-	private Integer userid;
-	private Set<String> roles;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer age;
+	
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private LocalDate bornDate;
+	
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private BigDecimal income;
+	
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private String cpf;
+	
+	@OneToOne(cascade=CascadeType.MERGE)
+	@JoinColumn(name = "user_id")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private UserCredential user;	
+	
+	public Resident() {
+		
+	}
+	
+	public Resident(Integer id, String firstName, String lastName) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+	}
 	
 	
+	
+	
+	public Resident(String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income, String cpf,
+			UserCredential user) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.bornDate = bornDate;
+		this.income = income;
+		this.cpf = cpf;
+		this.user = user;
+	}
+
+	public UserCredential getUser() {
+		return user;
+	}
+	public void setUser(UserCredential user) {
+		this.user = user;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -75,28 +123,8 @@ public class Resident implements Serializable {
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
 	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	public Integer getUserid() {
-		return userid;
-	}
-	public void setUserid(Integer userid) {
-		this.userid = userid;
-	}
-	public Set<String> getRoles() {
-		return roles;
-	}
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
-	}
+	
+	public static final Comparator<Resident> compareByIncome = (Resident r1, Resident r2) -> {
+        return r1.getIncome().compareTo(r2.getIncome());
+    };
 }

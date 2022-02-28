@@ -5,7 +5,8 @@ import java.util.Random;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.devinhouse.village.model.transport.UserDTO;
+import com.devinhouse.village.model.dao.UserCredential;
+import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class AuthService {
@@ -13,6 +14,7 @@ public class AuthService {
 	private UserService userService;
 	private PasswordEncoder passwordEncoder;
 	private EmailService emailService;
+	private UserCredentialRepository userRepository;
 	
 	public AuthService(UserService userService, PasswordEncoder passwordEncoder, EmailService emailService) {
 		this.userService = userService;
@@ -21,7 +23,7 @@ public class AuthService {
 	}
 	
 	public void sendNewPass(String email) throws Exception {
-		UserDTO user = userService.getUserByEmail(email);
+		UserCredential user = userRepository.getUserByEmail(email);
 		if(user == null) {
 			throw new Exception("E-mail não encontrado!");
 		}

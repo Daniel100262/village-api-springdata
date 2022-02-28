@@ -1,8 +1,12 @@
 package com.devinhouse.village.model.transport;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class VillageReportDTO {
+public class VillageReportDTO implements Serializable{
+ 
+	private static final long serialVersionUID = 1L;
+	
 	private final Float cost;
     private final Float initialBudget;
     private final BigDecimal villagersCostSum;
