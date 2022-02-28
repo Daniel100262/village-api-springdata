@@ -13,6 +13,7 @@ import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.model.dao.InsertResidentResponseType;
 import com.devinhouse.village.model.dao.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
+import com.devinhouse.village.rabbitmq.service.RabbitmqService;
 import com.devinhouse.village.repositories.ResidentRepository;
 import com.devinhouse.village.repositories.UserCredentialRepository;
 
@@ -22,6 +23,9 @@ public class ResidentService {
 	private UserCredentialRepository userCredentialRepository;
 	
 	private ResidentRepository residentRepository;
+	
+	private RabbitmqService amqpService;
+
 	
 	UserService userService;
 	
@@ -161,4 +165,5 @@ public class ResidentService {
 	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, villagerName);
 	
 	}
+
 }
