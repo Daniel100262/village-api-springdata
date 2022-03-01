@@ -23,7 +23,6 @@ import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.UserCredential;
 import com.devinhouse.village.model.UserSpringSecurity;
 import com.devinhouse.village.repositories.UserCredentialRepository;
-import com.devinhouse.village.repositories.UserRoleRepository;
 
 @Service
 public class UserService implements UserDetailsService {
