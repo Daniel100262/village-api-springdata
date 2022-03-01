@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 public enum InsertResidentResponseType {
 	UNKNOW_ERROR(-1),

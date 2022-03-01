@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.devinhouse.village.exception.NullResidentException;
-import com.devinhouse.village.model.dao.InsertResidentResponseType;
-import com.devinhouse.village.model.dao.Resident;
+import com.devinhouse.village.model.InsertResidentResponseType;
+import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
 import com.devinhouse.village.repositories.UserCredentialRepository;
@@ -22,9 +22,6 @@ public class ResidentService {
 	private UserCredentialRepository userCredentialRepository;
 	
 	private ResidentRepository residentRepository;
-	
-	private RabbitmqService amqpService;
-
 	
 	UserService userService;
 	
@@ -68,15 +65,22 @@ public class ResidentService {
 	}
 
 	public Integer create(Resident resident) {
-		if (resident == null) {
-			throw new IllegalArgumentException("O morador está nulo!");
-		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
-			throw new IllegalArgumentException("O morador já existe na lista!");
-		} else if (resident.getUser().equals(null)) {
-			
-		}
-	
+		
 		Integer returnCode = InsertResidentResponseType.UNKNOW_ERROR.getResponseCode();
+		
+		if (resident == null) {
+			
+			returnCode = InsertResidentResponseType.INVALID_DATA.getResponseCode();
+			throw new IllegalArgumentException("O morador está nulo!");
+			
+		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
+			
+			throw new IllegalArgumentException("O morador já existe na lista!");
+			
+		} else if (resident.getUser().equals(null)) {
+			returnCode = InsertResidentResponseType.INVALID_DATA.getResponseCode();
+			throw new IllegalArgumentException("O morador contém um usuário inválido!");
+		}
 		
 		if(resident.getUser().isValid()) {
 			userService.create(resident); //TODO: arrumar userService
@@ -86,12 +90,10 @@ public class ResidentService {
 		
 		try {
 			resident = this.residentRepository.save(resident);
-			System.out.println("Codigo do resident adicionado retornado: "+resident.getId()); //TODO: Remover isso
 			returnCode = InsertResidentResponseType.SUCCESS_ADDED.getResponseCode();
 		} catch (Exception e) {
 			e.printStackTrace();
 			userCredentialRepository.deleteById(returnCode);
-			//userService.deleteUserById(resident.getUser().getId());
 		}
 
 		return returnCode;

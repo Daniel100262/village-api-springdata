@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devinhouse.village.model.dao.InsertResidentResponseType;
-import com.devinhouse.village.model.dao.Resident;
+import com.devinhouse.village.model.InsertResidentResponseType;
+import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.service.ResidentService;
 
 @RestController
@@ -39,7 +39,6 @@ public class ResidentRest {
 	
 	@GetMapping("/listbyname")
 	public List<Resident> getResidentByName(@RequestParam("name") String name) {
-		System.out.println("Procurando por: "+name);
 		return residentService.getResidentByName(name);
 	}
 	

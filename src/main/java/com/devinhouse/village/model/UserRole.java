@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

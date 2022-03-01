@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -59,9 +59,6 @@ public class Resident implements Serializable {
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
-	
-	
-	
 	
 	public Resident(String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income, String cpf,
 			UserCredential user) {

@@ -25,6 +25,9 @@ public class ReportRest {
 	@Autowired
 	private ResidentService residentService;
 
+	@Autowired
+    private Sender queueSender;
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate")
 	public VillageReportDTO getFinancialReport() throws SQLException {
@@ -45,10 +48,7 @@ public class ReportRest {
 		ExportPDF exporter = new ExportPDF(report);
 		exporter.export(response);
 	}
-	
-	@Autowired
-    private Sender queueSender;
-    
+	    
     @PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate/pdf/email")
 	public void exportToPDF(@RequestParam("email") String emailDestination) throws DocumentException, IOException {

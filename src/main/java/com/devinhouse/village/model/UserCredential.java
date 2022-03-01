@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;

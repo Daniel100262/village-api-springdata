@@ -5,7 +5,7 @@ import java.util.Random;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.devinhouse.village.model.dao.UserCredential;
+import com.devinhouse.village.model.UserCredential;
 import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
