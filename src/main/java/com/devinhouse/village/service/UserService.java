@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityExistsException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,15 +19,19 @@ import org.springframework.stereotype.Service;
 import com.devinhouse.village.exception.DuplicatedUserException;
 import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.exception.NullUserException;
-import com.devinhouse.village.model.dao.Resident;
-import com.devinhouse.village.model.dao.UserCredential;
-import com.devinhouse.village.model.dao.UserSpringSecurity;
+import com.devinhouse.village.model.Resident;
+import com.devinhouse.village.model.UserCredential;
+import com.devinhouse.village.model.UserSpringSecurity;
 import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class UserService implements UserDetailsService {
 
+	@Autowired
 	private UserCredentialRepository userRepository;
+	
+	@Autowired
+	private UserRoleService userRoleService;
 
 	public UserCredential getUserById(Integer id) {
 		return userRepository.getById(id);
@@ -35,17 +40,18 @@ public class UserService implements UserDetailsService {
 	public UserService(UserCredentialRepository userRepository) {
 		this.userRepository = userRepository;
 	}
+	
+	public void delete(UserCredential userCredential) {
+		this.userRepository.delete(userCredential);
+	}
 
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException { // TODO: Modificado aqui
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		UserCredential user = null;
 		 try {
-		System.out.println("Usuário --> " + userRepository.getUserByEmail(email).getEmail());
-		System.out.println("Senha --> " + userRepository.getUserByEmail(email).getPassword());
 		user = userRepository.getUserByEmail(email);
 
 		} catch (NullPointerException e) {
-			//System.out.println("Deu null pointer no load user by username");
 			throw new NullResidentException("Login invalido! Nenhum morador encontrado com o e-mail: "+email);
 		}
 		if (user == null) {
@@ -66,12 +72,11 @@ public class UserService implements UserDetailsService {
 	public void create(Resident resident) {
 		if (resident.getUser().getEmail() == null || resident.getUser().getPassword() == null
 				|| resident.getUser() == null||resident.getUser().getUserRoles() == null) {
-			throw new IllegalArgumentException("O usuario contém parâmetros nulos!"); // TODO: Remover
+			throw new IllegalArgumentException("O usuario contém parâmetros nulos!");
 		}
 
 		if (!isPasswordValid(resident.getUser().getPassword())) {
-			throw new IllegalArgumentException("O usuario contém uma senha fora dos padrões estabelecidos!"); // TODO:
-																												// Remover
+			throw new IllegalArgumentException("O usuario contém uma senha fora dos padrões estabelecidos!");
 		}
 
 		if (resident.getUser().equals(null)) {
@@ -86,6 +91,7 @@ public class UserService implements UserDetailsService {
 		BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
 
 		try {
+			resident.getUser().setUserRoles(userRoleService.getRolesListByRoleName(resident.getRole()));
 			resident.getUser().setPassword(pe.encode(resident.getUser().getPassword()));
 			UserCredential createdUser = this.userRepository.save(resident.getUser());
 			resident.setUser(createdUser);

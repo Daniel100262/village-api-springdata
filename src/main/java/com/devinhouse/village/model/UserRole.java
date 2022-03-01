@@ -1,30 +1,30 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
+@Table(name = "roles")
 public class UserRole implements GrantedAuthority {
 
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue
+	@Column(name = "role_id")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	private String role;
 	
-	@ManyToOne
-	@JoinColumn(name = "userCredential_id")
-	private UserCredential userCredential;
+	private String roleName;
 	
 	public UserRole(Integer id, String role) {
 		this.id = id;
-		this.role = role;
+		this.roleName = role;
 	}
 	
 	public UserRole() {
@@ -37,14 +37,14 @@ public class UserRole implements GrantedAuthority {
 	public void setId(Integer id) {
 		this.id = id;
 	}
-	public String getRole() {
-		return role;
+	public String getRoleName() {
+		return roleName;
 	}
-	public void setRole(String role) {
-		this.role = role;
+	public void setRoleName(String role) {
+		this.roleName = role;
 	}
 	@Override
 	public String getAuthority() {
-		return role;
+		return roleName;
 	}
 }

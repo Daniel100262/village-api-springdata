@@ -1,7 +1,6 @@
 package com.devinhouse.village.controller.rest;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,9 +24,12 @@ public class ReportRest {
 	@Autowired
 	private ResidentService residentService;
 
+	@Autowired
+    private Sender queueSender;
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate")
-	public VillageReportDTO getFinancialReport() throws SQLException {
+	public VillageReportDTO getFinancialReport() {
 		return residentService.genereteReport();
 	}
 
@@ -45,10 +47,7 @@ public class ReportRest {
 		ExportPDF exporter = new ExportPDF(report);
 		exporter.export(response);
 	}
-	
-	@Autowired
-    private Sender queueSender;
-    
+	    
     @PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate/pdf/email")
 	public void exportToPDF(@RequestParam("email") String emailDestination) throws DocumentException, IOException {

@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,8 +17,6 @@ public class UserSpringSecurity implements UserDetails{
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public UserSpringSecurity(String email, String password, Collection<? extends GrantedAuthority> authorities) {
-		
-		System.out.println("Passou no construtor ruim ##################");
 		this.email = email;
 		this.password = password;
 		this.authorities = authorities;
@@ -27,9 +25,6 @@ public class UserSpringSecurity implements UserDetails{
 	public UserSpringSecurity(String email, String password, List<UserRole> userRoles) {
 		this.email = email;
 		this.password = password;
-		//this.authorities = userRoles;
-		System.out.println("Role --> "+userRoles.get(0).getAuthority());
-		System.out.println("Passou no user spring security ##################");
 		this.authorities = userRoles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getAuthority())).collect(Collectors.toSet());
 	}
 

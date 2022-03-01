@@ -1,4 +1,4 @@
-package com.devinhouse.village.model.dao;
+package com.devinhouse.village.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -44,10 +45,18 @@ public class Resident implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cpf;
 	
-	@OneToOne(cascade=CascadeType.MERGE)
+	@OneToOne(cascade=CascadeType.REMOVE)
 	@JoinColumn(name = "user_id")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private UserCredential user;	
+	private UserCredential user;
+	
+	@Transient
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String role;
+	
+	@Transient
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String email;
 	
 	public Resident() {
 		
@@ -60,9 +69,6 @@ public class Resident implements Serializable {
 		this.lastName = lastName;
 	}
 	
-	
-	
-	
 	public Resident(String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income, String cpf,
 			UserCredential user) {
 		super();
@@ -73,6 +79,37 @@ public class Resident implements Serializable {
 		this.income = income;
 		this.cpf = cpf;
 		this.user = user;
+	}
+	
+	public Resident(String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income, String cpf,
+			String email) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.bornDate = bornDate;
+		this.income = income;
+		this.cpf = cpf;
+		this.email = email;
+	}
+
+	
+	
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public UserCredential getUser() {

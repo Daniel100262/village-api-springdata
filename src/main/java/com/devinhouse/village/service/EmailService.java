@@ -2,7 +2,7 @@ package com.devinhouse.village.service;
 
 import org.springframework.mail.SimpleMailMessage;
 
-import com.devinhouse.village.model.dao.UserCredential;
+import com.devinhouse.village.model.UserCredential;
 import com.lowagie.text.pdf.PdfDocument;
 
 public interface EmailService {

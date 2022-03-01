@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devinhouse.village.model.dao.UserSpringSecurity;
+import com.devinhouse.village.model.UserSpringSecurity;
 import com.devinhouse.village.model.transport.MailDTO;
 import com.devinhouse.village.service.AuthService;
 import com.devinhouse.village.service.UserService;
@@ -28,7 +28,6 @@ public class AuthRest {
 
 	@PostMapping("/refresh_token")
 	public ResponseEntity<Void> refreshToken(HttpServletResponse response) {
-		
 		UserSpringSecurity userSpringSecurity = UserService.authenticated();
 		String newToken = jwtUtil.generateToken(userSpringSecurity.getUsername());
 		response.addHeader("Authorization", newToken);

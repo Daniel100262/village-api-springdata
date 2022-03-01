@@ -17,7 +17,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.devinhouse.village.model.dao.UserSpringSecurity;
+import com.devinhouse.village.model.UserSpringSecurity;
 import com.devinhouse.village.model.transport.CredentialsDTO;
 import com.devinhouse.village.util.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,7 +42,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
 					credentials.getEmail(), credentials.getPassword(), new ArrayList<>());
 			Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-			System.out.println("Passou no tenta auth");
 			return authenticate;
 		} catch (IOException e) {
 			throw new RuntimeException(e);

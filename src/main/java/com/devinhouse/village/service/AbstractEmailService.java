@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.springframework.mail.SimpleMailMessage;
 
-import com.devinhouse.village.model.dao.UserCredential;
+import com.devinhouse.village.model.UserCredential;
 
 
 public abstract class AbstractEmailService implements EmailService {

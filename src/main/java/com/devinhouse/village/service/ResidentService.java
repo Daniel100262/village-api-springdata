@@ -6,34 +6,31 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullResidentException;
-import com.devinhouse.village.model.dao.InsertResidentResponseType;
-import com.devinhouse.village.model.dao.Resident;
+import com.devinhouse.village.exception.NullUserException;
+import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
-import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class ResidentService {
-	
-	private UserCredentialRepository userCredentialRepository;
-	
+
+	@Autowired
 	private ResidentRepository residentRepository;
 	
-	private RabbitmqService amqpService;
-
-	
+	@Autowired
 	UserService userService;
 	
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
 
-	public ResidentService(UserService userService, UserCredentialRepository userCredentialRepository, ResidentRepository residentRepository) {
+	public ResidentService(UserService userService, ResidentRepository residentRepository) {
 		this.userService = userService;
-		this.userCredentialRepository = userCredentialRepository;
 		this.residentRepository = residentRepository;
 	}
 
@@ -67,34 +64,31 @@ public class ResidentService {
 		return residentRepository.getResidentsByName(name);
 	}
 
-	public Integer create(Resident resident) {
+	public void create(Resident resident) {
+		
+		
 		if (resident == null) {
-			throw new IllegalArgumentException("O morador está nulo!");
-		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
-			throw new IllegalArgumentException("O morador já existe na lista!");
-		} else if (resident.getUser().equals(null)) {
+			throw new NullResidentException("O morador está nulo!");
 			
+		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
+			
+			throw new DuplicatedResidentException("O morador "+resident.getFirstName()+" "+resident.getLastName()+" com CPF "+resident.getCpf()+" já existe na lista!");
+			
+		} else if (resident.getUser().equals(null)) {
+			throw new NullUserException("O morador contém um usuário vazio ou inválido!");
 		}
-	
-		Integer returnCode = InsertResidentResponseType.UNKNOW_ERROR.getResponseCode();
 		
 		if(resident.getUser().isValid()) {
-			userService.create(resident); //TODO: arrumar userService
+			userService.create(resident);
 		}
 		
 		resident.setAge(calculateAge(resident.getBornDate(), LocalDate.now()));
 		
 		try {
 			resident = this.residentRepository.save(resident);
-			System.out.println("Codigo do resident adicionado retornado: "+resident.getId()); //TODO: Remover isso
-			returnCode = InsertResidentResponseType.SUCCESS_ADDED.getResponseCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			userCredentialRepository.deleteById(returnCode);
-			//userService.deleteUserById(resident.getUser().getId());
 		}
-
-		return returnCode;
 	}
 	
 	private int calculateAge(LocalDate bornDate, LocalDate currentDate) {
@@ -103,10 +97,11 @@ public class ResidentService {
         } else {
             return 0;
         }
+        
     }
 
 	private boolean isResidentAlreadyOnList(List<Resident> residents, Resident resident) {
-		return residents.stream().anyMatch(residentInList -> residentInList.equals(resident));
+		return residents.stream().anyMatch(residentInList -> residentInList.getCpf().contentEquals(resident.getCpf()));
 	}
 
 	public Boolean delete(Integer id) {
@@ -117,6 +112,7 @@ public class ResidentService {
 		Boolean sucessfullDeleted = false;
 		
 		if(this.residentRepository.existsById(id)) {
+			//this.userService.delete(this.residentRepository.getById(id).getUser());
 			this.residentRepository.deleteById(id);
 			sucessfullDeleted = true;
 			return sucessfullDeleted;
@@ -148,7 +144,6 @@ public class ResidentService {
 		return this.residentRepository.getResidentsByMonth(month);
 	}
 
-	//TODO: Refatorar
 	public VillageReportDTO genereteReport(String emailDestination) {
 		List<Resident> residents = this.residentRepository.findAll();
 	
