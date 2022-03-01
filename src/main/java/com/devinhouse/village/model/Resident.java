@@ -45,7 +45,7 @@ public class Resident implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cpf;
 	
-	@OneToOne(cascade=CascadeType.MERGE)
+	@OneToOne(cascade=CascadeType.REMOVE)
 	@JoinColumn(name = "user_id")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private UserCredential user;

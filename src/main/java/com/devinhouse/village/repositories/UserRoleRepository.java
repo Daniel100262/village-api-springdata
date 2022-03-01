@@ -14,5 +14,13 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Integer>{
 	
 	@Transactional
     @Query("SELECT ur FROM UserRole ur where ur.roleName = :roleName")
-    List<UserRole> getByRoleName(String roleName);
+    List<UserRole> getRolesListByRoleName(String roleName);
+	
+	@Transactional
+    @Query("SELECT ur FROM UserRole ur where ur.roleName = :roleName")
+    UserRole getRoleByRoleName(String roleName);
+	
+	@Transactional
+	@Query(value = "DELETE FROM users_role WHERE user_id=?1", nativeQuery = true)
+	void deleteUserRoleRelationshipByUserId(Integer userId);
 }

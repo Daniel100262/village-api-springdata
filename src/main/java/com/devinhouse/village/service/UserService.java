@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
 	private UserCredentialRepository userRepository;
 	
 	@Autowired
-	private UserRoleRepository userRoleRepository;
+	private UserRoleService userRoleService;
 
 	public UserCredential getUserById(Integer id) {
 		return userRepository.getById(id);
@@ -40,6 +40,10 @@ public class UserService implements UserDetailsService {
 	
 	public UserService(UserCredentialRepository userRepository) {
 		this.userRepository = userRepository;
+	}
+	
+	public void delete(UserCredential userCredential) {
+		this.userRepository.delete(userCredential);
 	}
 
 	@Override
@@ -88,7 +92,7 @@ public class UserService implements UserDetailsService {
 		BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
 
 		try {
-			resident.getUser().setUserRoles(userRoleRepository.getByRoleName(resident.getRole()));
+			resident.getUser().setUserRoles(userRoleService.getRolesListByRoleName(resident.getRole()));
 			resident.getUser().setPassword(pe.encode(resident.getUser().getPassword()));
 			UserCredential createdUser = this.userRepository.save(resident.getUser());
 			resident.setUser(createdUser);

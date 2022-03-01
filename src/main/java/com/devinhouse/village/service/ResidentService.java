@@ -16,7 +16,6 @@ import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
 import com.devinhouse.village.repositories.UserCredentialRepository;
-import com.devinhouse.village.repositories.UserRoleRepository;
 
 @Service
 public class ResidentService {
@@ -111,10 +110,11 @@ public class ResidentService {
         } else {
             return 0;
         }
+        
     }
 
 	private boolean isResidentAlreadyOnList(List<Resident> residents, Resident resident) {
-		return residents.stream().anyMatch(residentInList -> residentInList.equals(resident));
+		return residents.stream().anyMatch(residentInList -> residentInList.getCpf() == resident.getCpf());
 	}
 
 	public Boolean delete(Integer id) {
@@ -125,6 +125,7 @@ public class ResidentService {
 		Boolean sucessfullDeleted = false;
 		
 		if(this.residentRepository.existsById(id)) {
+			//this.userService.delete(this.residentRepository.getById(id).getUser());
 			this.residentRepository.deleteById(id);
 			sucessfullDeleted = true;
 			return sucessfullDeleted;

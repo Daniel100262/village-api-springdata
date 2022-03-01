@@ -34,7 +34,7 @@ public class UserCredential implements Serializable {
 	private String email;
 	private String password;
 	
-	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
 	@JoinTable(
 			name="users_role",
 			joinColumns = @JoinColumn(name = "user_id"),

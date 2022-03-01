@@ -84,12 +84,13 @@ public class ResidentRest {
 	@PostMapping("/delete/{id}")
 	public ResponseEntity<String> deleteResident(@PathVariable("id") Integer id){
 		
+		
 		Boolean response = this.residentService.delete(id);
 		
 		if (response == false) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Morador removido com sucesso!");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Falha ao remover o morador!");
 		}
 		
-		return ResponseEntity.status(HttpStatus.OK).build();
+		return ResponseEntity.status(HttpStatus.OK).body("Morador removido com sucesso!");
 	}
 }
