@@ -20,9 +20,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
-    //@Query("SELECT new com.devinhouse.village.model.dao.Resident(r.id, firstName, r.lastName) FROM Resident r where lower(r.firstName) like lower(concat('%', :name,'%'))")
-	
-    @Query("SELECT new Resident(r.id, firstName, r.lastName) FROM Resident r where r.firstName like upper('%:name%') or r.lastName like upper('%:name%')")
+    @Query("SELECT r FROM Resident r WHERE  lower(r.firstName) like lower(concat('%', :name,'%')) or lower(r.lastName) like lower(concat('%', :name,'%')) ")
     List<Resident> getResidentsByName(String name);
 
 	
