@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 
 import com.devinhouse.village.exception.InvalidCredentialPropertyException;
@@ -23,13 +27,19 @@ public class UserCredential implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
 	private Integer id;
 	
 	private String email;
 	private String password;
 	
-	@OneToMany(fetch = FetchType.EAGER,mappedBy = "userCredential", cascade = CascadeType.REMOVE)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
+	@JoinTable(
+			name="users_role",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+			)
     @JsonIgnore
 	private List<UserRole> userRoles = new ArrayList<>();
 	
@@ -54,8 +64,6 @@ public class UserCredential implements Serializable {
 		this.resident = resident;
 	}
 	
-	
-
 	public Resident getResident() {
 		return resident;
 	}

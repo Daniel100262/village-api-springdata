@@ -23,7 +23,6 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
     @Query("SELECT r FROM Resident r WHERE  lower(r.firstName) like lower(concat('%', :name,'%')) or lower(r.lastName) like lower(concat('%', :name,'%')) ")
     List<Resident> getResidentsByName(String name);
 
-	
 	@Transactional
     @Modifying
     @Query("SELECT new Resident(r.id, r.firstName, r.lastName) FROM Resident r where r.age >= :age ")

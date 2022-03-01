@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import javax.persistence.EntityExistsException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,11 +23,16 @@ import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.UserCredential;
 import com.devinhouse.village.model.UserSpringSecurity;
 import com.devinhouse.village.repositories.UserCredentialRepository;
+import com.devinhouse.village.repositories.UserRoleRepository;
 
 @Service
 public class UserService implements UserDetailsService {
 
+	@Autowired
 	private UserCredentialRepository userRepository;
+	
+	@Autowired
+	private UserRoleRepository userRoleRepository;
 
 	public UserCredential getUserById(Integer id) {
 		return userRepository.getById(id);
@@ -82,6 +88,7 @@ public class UserService implements UserDetailsService {
 		BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
 
 		try {
+			resident.getUser().setUserRoles(userRoleRepository.getByRoleName(resident.getRole()));
 			resident.getUser().setPassword(pe.encode(resident.getUser().getPassword()));
 			UserCredential createdUser = this.userRepository.save(resident.getUser());
 			resident.setUser(createdUser);

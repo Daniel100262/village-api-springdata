@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -47,7 +48,10 @@ public class Resident implements Serializable {
 	@OneToOne(cascade=CascadeType.MERGE)
 	@JoinColumn(name = "user_id")
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private UserCredential user;	
+	private UserCredential user;
+	
+	@Transient
+	private String role;
 	
 	public Resident() {
 		
@@ -70,6 +74,17 @@ public class Resident implements Serializable {
 		this.income = income;
 		this.cpf = cpf;
 		this.user = user;
+	}
+
+	
+	
+	
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
 	}
 
 	public UserCredential getUser() {

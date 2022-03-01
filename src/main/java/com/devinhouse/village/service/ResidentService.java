@@ -6,6 +6,7 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +16,18 @@ import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
 import com.devinhouse.village.repositories.UserCredentialRepository;
+import com.devinhouse.village.repositories.UserRoleRepository;
 
 @Service
 public class ResidentService {
 	
+	@Autowired
 	private UserCredentialRepository userCredentialRepository;
-	
+
+	@Autowired
 	private ResidentRepository residentRepository;
 	
+	@Autowired
 	UserService userService;
 	
 	@Value("${village.budget}")
@@ -83,7 +88,8 @@ public class ResidentService {
 		}
 		
 		if(resident.getUser().isValid()) {
-			userService.create(resident); //TODO: arrumar userService
+			
+			userService.create(resident);
 		}
 		
 		resident.setAge(calculateAge(resident.getBornDate(), LocalDate.now()));
@@ -150,7 +156,6 @@ public class ResidentService {
 		return this.residentRepository.getResidentsByMonth(month);
 	}
 
-	//TODO: Refatorar
 	public VillageReportDTO genereteReport(String emailDestination) {
 		List<Resident> residents = this.residentRepository.findAll();
 	
