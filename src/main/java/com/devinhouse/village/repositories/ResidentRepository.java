@@ -20,7 +20,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
-    @Query("SELECT r FROM Resident r WHERE  lower(r.firstName) like lower(concat('%', :name,'%')) or lower(r.lastName) like lower(concat('%', :name,'%')) ")
+    @Query("SELECT new Resident(r.firstName, r.lastName, r.age, r.bornDate, r.income, r.cpf, r.user.email) FROM Resident r WHERE  lower(r.firstName) like lower(concat('%', :name,'%')) or lower(r.lastName) like lower(concat('%', :name,'%')) ")
     List<Resident> getResidentsByName(String name);
 
 	@Transactional
@@ -40,7 +40,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
-    @Query("SELECT new Resident(r.firstName, r.lastName, r.age, r.bornDate, r.income, r.cpf, r.user) FROM Resident r WHERE r.id = :id")
+    @Query("SELECT new Resident(r.firstName, r.lastName, r.age, r.bornDate, r.income, r.cpf, r.user.email) FROM Resident r WHERE r.id = :id")
 	List<Resident> findByIdFiltered(Integer id);
 	
 	

@@ -51,7 +51,12 @@ public class Resident implements Serializable {
 	private UserCredential user;
 	
 	@Transient
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String role;
+	
+	@Transient
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String email;
 	
 	public Resident() {
 		
@@ -75,10 +80,30 @@ public class Resident implements Serializable {
 		this.cpf = cpf;
 		this.user = user;
 	}
+	
+	public Resident(String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income, String cpf,
+			String email) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.bornDate = bornDate;
+		this.income = income;
+		this.cpf = cpf;
+		this.email = email;
+	}
 
 	
 	
 	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public String getRole() {
 		return role;
 	}

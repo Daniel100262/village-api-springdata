@@ -1,7 +1,6 @@
 package com.devinhouse.village.controller.rest;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +29,7 @@ public class ReportRest {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate")
-	public VillageReportDTO getFinancialReport() throws SQLException {
+	public VillageReportDTO getFinancialReport() {
 		return residentService.genereteReport();
 	}
 

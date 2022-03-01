@@ -10,18 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullResidentException;
-import com.devinhouse.village.model.InsertResidentResponseType;
+import com.devinhouse.village.exception.NullUserException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
-import com.devinhouse.village.repositories.UserCredentialRepository;
 
 @Service
 public class ResidentService {
-	
-	@Autowired
-	private UserCredentialRepository userCredentialRepository;
 
 	@Autowired
 	private ResidentRepository residentRepository;
@@ -32,9 +29,8 @@ public class ResidentService {
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
 
-	public ResidentService(UserService userService, UserCredentialRepository userCredentialRepository, ResidentRepository residentRepository) {
+	public ResidentService(UserService userService, ResidentRepository residentRepository) {
 		this.userService = userService;
-		this.userCredentialRepository = userCredentialRepository;
 		this.residentRepository = residentRepository;
 	}
 
@@ -68,26 +64,21 @@ public class ResidentService {
 		return residentRepository.getResidentsByName(name);
 	}
 
-	public Integer create(Resident resident) {
+	public void create(Resident resident) {
 		
-		Integer returnCode = InsertResidentResponseType.UNKNOW_ERROR.getResponseCode();
 		
 		if (resident == null) {
-			
-			returnCode = InsertResidentResponseType.INVALID_DATA.getResponseCode();
-			throw new IllegalArgumentException("O morador está nulo!");
+			throw new NullResidentException("O morador está nulo!");
 			
 		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
 			
-			throw new IllegalArgumentException("O morador já existe na lista!");
+			throw new DuplicatedResidentException("O morador "+resident.getFirstName()+" "+resident.getLastName()+" com CPF "+resident.getCpf()+" já existe na lista!");
 			
 		} else if (resident.getUser().equals(null)) {
-			returnCode = InsertResidentResponseType.INVALID_DATA.getResponseCode();
-			throw new IllegalArgumentException("O morador contém um usuário inválido!");
+			throw new NullUserException("O morador contém um usuário vazio ou inválido!");
 		}
 		
 		if(resident.getUser().isValid()) {
-			
 			userService.create(resident);
 		}
 		
@@ -95,13 +86,9 @@ public class ResidentService {
 		
 		try {
 			resident = this.residentRepository.save(resident);
-			returnCode = InsertResidentResponseType.SUCCESS_ADDED.getResponseCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			userCredentialRepository.deleteById(returnCode);
 		}
-
-		return returnCode;
 	}
 	
 	private int calculateAge(LocalDate bornDate, LocalDate currentDate) {
@@ -114,7 +101,7 @@ public class ResidentService {
     }
 
 	private boolean isResidentAlreadyOnList(List<Resident> residents, Resident resident) {
-		return residents.stream().anyMatch(residentInList -> residentInList.getCpf() == resident.getCpf());
+		return residents.stream().anyMatch(residentInList -> residentInList.getCpf().contentEquals(resident.getCpf()));
 	}
 
 	public Boolean delete(Integer id) {

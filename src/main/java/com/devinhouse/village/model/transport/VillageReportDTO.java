@@ -3,6 +3,8 @@ package com.devinhouse.village.model.transport;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class VillageReportDTO implements Serializable{
  
 	private static final long serialVersionUID = 1L;
@@ -11,6 +13,8 @@ public class VillageReportDTO implements Serializable{
     private final Float initialBudget;
     private final BigDecimal villagersCostSum;
     private final String villagerWithHigherCost;
+    
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final String reportEmailDestination;
     
  
@@ -31,7 +35,7 @@ public class VillageReportDTO implements Serializable{
 		this.initialBudget = initialBudget;
 		this.villagersCostSum = villagersCostSum;
 		this.villagerWithHigherCost = villagerWithHigherCost;
-		this.reportEmailDestination = "";
+		this.reportEmailDestination = null;
 	}
 	
 	

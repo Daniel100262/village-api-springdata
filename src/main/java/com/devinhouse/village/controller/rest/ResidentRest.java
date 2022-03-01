@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.devinhouse.village.model.InsertResidentResponseType;
+import com.devinhouse.village.exception.DuplicatedResidentException;
+import com.devinhouse.village.exception.NullUserException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.service.ResidentService;
 
@@ -56,28 +57,20 @@ public class ResidentRest {
 	@PostMapping("/add")
 	public ResponseEntity<String> addResident(@RequestBody Resident resident) throws SQLException{
 		
-		Integer sucessfullCreated = this.residentService.create(resident);
-		
-		if (sucessfullCreated == InsertResidentResponseType.DUPLICATED.getResponseCode()) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Cadastro duplicado!");
-		} 
-		
-		else if (sucessfullCreated == InsertResidentResponseType.SUCCESS_ADDED.getResponseCode()) {
-			return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso!");
-		} 
-		
-		else if (sucessfullCreated.equals(InsertResidentResponseType.INVALID_DATA.getResponseCode())) {
-			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("Dados invalidos!");
-		} 	
-		
-		else if (sucessfullCreated.equals(InsertResidentResponseType.INVALID_PATTERN.getResponseCode())) {
-			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("A senha informada não esta em conformidade com os padrões aceitos!");
+		try {
+			this.residentService.create(resident);
+		} catch (DuplicatedResidentException e) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		} catch (NullUserException e) {
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro desconhecido!");
 		}
 		
-		else {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro desconhecido!");
-		}
-		
+		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso!");
+	
 	}
 	
 	
