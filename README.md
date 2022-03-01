@@ -25,10 +25,10 @@ The following tools were used in the construction of the project:
 - [Spring Data](https://spring.io/projects/spring-data)
 
 ## ☰ Conceptual Modeling
-![ConceptualModeling](![image](https://user-images.githubusercontent.com/6551994/156147334-688c5c24-27d9-44ec-ac71-45f5f53d726c.png))
+![ConceptualModeling]![image](https://user-images.githubusercontent.com/6551994/156147334-688c5c24-27d9-44ec-ac71-45f5f53d726c.png)
 
 ## ☰ Logical Modeling
-![LogicalModeling](![image](https://user-images.githubusercontent.com/6551994/156144425-df3660d7-26be-4cc1-b0c8-4d5547bf77ba.png))
+![LogicalModeling]![image](https://user-images.githubusercontent.com/6551994/156144425-df3660d7-26be-4cc1-b0c8-4d5547bf77ba.png)
 
 
 ## ✅ Contributing
