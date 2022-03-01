@@ -26,7 +26,7 @@ public interface ResidentRepository extends JpaRepository<Resident, Integer> {
 	
 	@Transactional
     @Modifying
-    @Query("SELECT new Resident(r.id, r.firstName, r.lastName) FROM Resident r where r.age > :age ")
+    @Query("SELECT new Resident(r.id, r.firstName, r.lastName) FROM Resident r where r.age >= :age ")
     List<Resident> getResidentsByAge(Integer age);
 	
 	@Transactional
