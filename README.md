@@ -2,7 +2,7 @@
 
 This is an API for registering and consulting the residents of a village, as well as generating a financial report, using Spring Boot, Spring Core, Spring Security and Spring Data.
 
-## 🚀 Usage
+## 🚀 Running the application
 
 To run this project, it is necessary to follow the step by step below:
 
