@@ -6,11 +6,15 @@ This is an API for registering and consulting the residents of a village, as wel
 
 To run this project, it is necessary to follow the step by step below:
 
-1 - Run the **dbcrete.sql** SQL script to create the tables, restrictions, and the first user to authenticate to the application
+1 - Run the **dbcrete.sql** SQL script to create the database
 
-2 - After running, make a request to the endpoint **/login** with the email **admin@company.com** and the password **S2jx6uTbnCi*** and get the Bearer token from the request header
+2 - Run the Spring Boot Application to create database tables and relationships
 
-3 - Use the token to access other application endpoints, always observing the need for the correct role for the endpoint.
+3 - Run the **populate-db.sql** SQL script to populate database with initial data
+
+4 - Make a request to the endpoint **/login** with the email **admin@company.com** and the password **S2jx6uTbnCi*** and get the Bearer token from the request header
+
+5 - Use the token to access other application endpoints, always observing the need for the correct role for the endpoint.
 
 
 ## 🛠 Tecnologies
