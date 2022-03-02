@@ -1,6 +1,6 @@
-# DevInHouse Village API (with Spring Data, Hibernate, RabbitMQ, JUnit and Mockito)
+# DevInHouse Village API (Refactored)
 
-This is an API for registering and consulting the residents of a village, as well as generating a financial report, using Spring Boot, Spring Core, Spring Security and Spring Data.
+This is an API for registering and consulting the residents of a village, as well as generating a financial report, using Spring Boot, Spring Core, Spring Security and Spring Data, now refactored to work with Spring Data, Hibernate, RabbitMQ, JUnit and Mockito
 
 ## 🚀 Running the application
 
