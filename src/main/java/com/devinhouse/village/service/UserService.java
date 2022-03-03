@@ -27,11 +27,20 @@ import com.devinhouse.village.repositories.UserCredentialRepository;
 @Service
 public class UserService implements UserDetailsService {
 
-	@Autowired
 	private UserCredentialRepository userRepository;
 	
-	@Autowired
 	private UserRoleService userRoleService;
+
+	
+	
+	public UserService(UserCredentialRepository userRepository, UserRoleService userRoleService) {
+		this.userRepository = userRepository;
+		this.userRoleService = userRoleService;
+	}
+	
+	public UserService() {
+		
+	}
 
 	public UserCredential getUserById(Integer id) {
 		return userRepository.getById(id);

@@ -6,7 +6,6 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -20,14 +19,46 @@ import com.devinhouse.village.repositories.ResidentRepository;
 @Service
 public class ResidentService {
 
-	@Autowired
 	private ResidentRepository residentRepository;
 	
-	@Autowired
 	UserService userService;
 	
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
+
+	public ResidentService(ResidentRepository residentRepository, UserService userService, Float budgetOfVillage) {
+		this.residentRepository = residentRepository;
+		this.userService = userService;
+		this.budgetOfVillage = budgetOfVillage;
+	}
+	
+	public ResidentService() {
+		
+	}
+
+	public ResidentRepository getResidentRepository() {
+		return residentRepository;
+	}
+
+	public void setResidentRepository(ResidentRepository residentRepository) {
+		this.residentRepository = residentRepository;
+	}
+
+	public UserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
+	public Float getBudgetOfVillage() {
+		return budgetOfVillage;
+	}
+
+	public void setBudgetOfVillage(Float budgetOfVillage) {
+		this.budgetOfVillage = budgetOfVillage;
+	}
 
 	public ResidentService(UserService userService, ResidentRepository residentRepository) {
 		this.userService = userService;

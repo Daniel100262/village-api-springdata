@@ -1,9 +1,7 @@
 package com.devinhouse.village.controller.rest;
 
-import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,10 +22,12 @@ import com.devinhouse.village.service.ResidentService;
 @RequestMapping("/resident")
 public class ResidentRest {
 	
-	@Autowired
 	private ResidentService residentService;
 	
-	
+	public ResidentRest(ResidentService residentService) {
+		this.residentService = residentService;
+	}
+
 	@GetMapping("/list-all")
 	public List<Resident> listAvengers() {
 		return residentService.listResidents();
@@ -55,7 +55,7 @@ public class ResidentRest {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add")
-	public ResponseEntity<String> addResident(@RequestBody Resident resident) throws SQLException{
+	public ResponseEntity<String> addResident(@RequestBody Resident resident) {
 		
 		try {
 			this.residentService.create(resident);
@@ -73,11 +73,9 @@ public class ResidentRest {
 	
 	}
 	
-	
 	@PostMapping("/delete/{id}")
-	public ResponseEntity<String> deleteResident(@PathVariable("id") Integer id){
-		
-		
+	public ResponseEntity<String> deleteResident(@PathVariable("id") Integer id) {
+	
 		Boolean response = this.residentService.delete(id);
 		
 		if (response == false) {
