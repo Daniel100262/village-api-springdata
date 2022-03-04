@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullUserException;
+import com.devinhouse.village.exception.ResidentNotFoundException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.service.ResidentService;
 
@@ -30,12 +31,19 @@ public class ResidentRest {
 
 	@GetMapping("/list-all")
 	public List<Resident> listAvengers() {
-		return residentService.listResidents();
+		return residentService.getAllResidents();
 	}
 	
 	@GetMapping("/listbyid/{id}")
-	public Resident getResident(@PathVariable("id") Integer id) {
-		return residentService.getResidentById(id);
+	public ResponseEntity<?> getResident(@PathVariable("id") Integer id) {
+		Resident resident = null;
+		try {
+			resident = residentService.getResidentById(id);
+		} catch (ResidentNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+		}
+		
+		return ResponseEntity.ok(resident) ;
 	}
 	
 	@GetMapping("/listbyname")
@@ -56,9 +64,9 @@ public class ResidentRest {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/add")
 	public ResponseEntity<String> addResident(@RequestBody Resident resident) {
-		
+		Resident createdResident = null;
 		try {
-			this.residentService.create(resident);
+			createdResident = this.residentService.create(resident);
 		} catch (DuplicatedResidentException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
 		} catch (NullUserException e) {
@@ -69,7 +77,13 @@ public class ResidentRest {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro desconhecido!");
 		}
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body("Cadastrado com sucesso!");
+		if(createdResident != null) {
+			return ResponseEntity.status(HttpStatus.CREATED).body("Morador "+resident.getFirstName()+" "+resident.getLastName()+" com ID "+resident.getId()+" cadastrado com sucesso!");
+		} else {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ocorreu um erro desconhecido!");
+		}
+		
+		
 	
 	}
 	

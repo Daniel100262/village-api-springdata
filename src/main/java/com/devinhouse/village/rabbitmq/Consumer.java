@@ -9,11 +9,17 @@ import com.devinhouse.village.service.RabbitmqService;
 
 @Component
 public class Consumer {
+
+	RabbitmqService rabbitmqService;	
 	
 	@Autowired
-	RabbitmqService rabbitmqService;
+    public Consumer(RabbitmqService rabbitmqService) {
+		this.rabbitmqService = rabbitmqService;
+	}
 
-    @RabbitListener(queues = {"${queue.name}"})
+
+
+	@RabbitListener(queues = {"${queue.name}"})
     public void receive(@Payload VillageReportDTO report) throws Exception {
     	rabbitmqService.sendReportByEmail(report.getReportEmailDestination(), report);
     }

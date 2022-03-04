@@ -21,6 +21,11 @@ public class UserServiceTest {
     private UserService userSevice;
     
     @Test
+    void ShoudReturnInvalidCredentialPropertyExceptionOnWeakUserPassword() {
+    	
+    }
+    
+    @Test
     void ShouldLoadUserByEmail() {
     	
     }

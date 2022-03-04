@@ -11,10 +11,14 @@ import com.devinhouse.village.repositories.UserRoleRepository;
 @Service
 public class UserRoleService {
 	
-	@Autowired
 	private UserRoleRepository userRoleRepository;
 	
-	
+	@Autowired
+	public UserRoleService(UserRoleRepository userRoleRepository) {
+		super();
+		this.userRoleRepository = userRoleRepository;
+	}
+
 	public List<UserRole> getRolesListByRoleName(String roleName) {
 		return userRoleRepository.getRolesListByRoleName(roleName);
 	}

@@ -21,12 +21,15 @@ import com.lowagie.text.DocumentException;
 @RequestMapping("/report")
 public class ReportRest {
 
-	@Autowired
-	private ResidentService residentService;
-
-	@Autowired
+	private ResidentService residentService;	
     private Sender queueSender;
 	
+    @Autowired
+	public ReportRest(ResidentService residentService, Sender queueSender) {
+		this.residentService = residentService;
+		this.queueSender = queueSender;
+	}
+
 	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/generate")
 	public VillageReportDTO getFinancialReport() {

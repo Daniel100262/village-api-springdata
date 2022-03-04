@@ -11,8 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServicePDF {
-	@Autowired
+	
 	private JavaMailSender mailSender;
+
+	@Autowired
+	public EmailServicePDF(JavaMailSender mailSender) {
+		this.mailSender = mailSender;
+	}
+
 
 
 	public void sendMailWithAttachment(String emailDestination, String subject, String body, byte[] reportToAttach) {

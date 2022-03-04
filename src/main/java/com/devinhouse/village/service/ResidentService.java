@@ -6,12 +6,15 @@ import java.time.Period;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.exception.NullUserException;
+import com.devinhouse.village.exception.NullVillageBudgetException;
+import com.devinhouse.village.exception.ResidentNotFoundException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
@@ -26,7 +29,8 @@ public class ResidentService {
 	@Value("${village.budget}")
 	private Float budgetOfVillage;
 
-	public ResidentService(ResidentRepository residentRepository, UserService userService, Float budgetOfVillage) {
+	@Autowired
+	public ResidentService(ResidentRepository residentRepository, UserService userService, @Value("${village.budget}")Float budgetOfVillage) {
 		this.residentRepository = residentRepository;
 		this.userService = userService;
 		this.budgetOfVillage = budgetOfVillage;
@@ -36,24 +40,9 @@ public class ResidentService {
 		
 	}
 
-	public ResidentRepository getResidentRepository() {
-		return residentRepository;
-	}
-
-	public void setResidentRepository(ResidentRepository residentRepository) {
-		this.residentRepository = residentRepository;
-	}
-
-	public UserService getUserService() {
-		return userService;
-	}
-
-	public void setUserService(UserService userService) {
-		this.userService = userService;
-	}
-
 	public Float getBudgetOfVillage() {
 		return budgetOfVillage;
+
 	}
 
 	public void setBudgetOfVillage(Float budgetOfVillage) {
@@ -64,17 +53,8 @@ public class ResidentService {
 		this.userService = userService;
 		this.residentRepository = residentRepository;
 	}
-
-	public ResidentRepository getResident() {
-		return residentRepository;
-	}
-
 	
-	public void setResident(ResidentRepository residentRepository) {
-		this.residentRepository = residentRepository;
-	}
-	
-	public List<Resident> listResidents() {
+	public List<Resident> getAllResidents() {
 		return this.residentRepository.findAllFiltered();
 	}
 
@@ -88,38 +68,34 @@ public class ResidentService {
 	}
 
 	public Resident getResidentById(Integer id) {
-		return residentRepository.findByIdFiltered(id).get(0);
+		if(residentRepository.findByIdFiltered(id).size() < 1) {
+			throw new ResidentNotFoundException("Não existe nenhum morador com o ID "+id);
+		} else {
+			return residentRepository.findByIdFiltered(id).get(0);
+		}
 	}
 
 	public List<Resident> getResidentByName(String name) {
 		return residentRepository.getResidentsByName(name);
 	}
 
-	public void create(Resident resident) {
-		
-		
-		if (resident == null) {
-			throw new NullResidentException("O morador está nulo!");
-			
-		} else if (isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
-			
-			throw new DuplicatedResidentException("O morador "+resident.getFirstName()+" "+resident.getLastName()+" com CPF "+resident.getCpf()+" já existe na lista!");
-			
-		} else if (resident.getUser().equals(null)) {
-			throw new NullUserException("O morador contém um usuário vazio ou inválido!");
-		}
-		
-		if(resident.getUser().isValid()) {
+	public Resident create(Resident resident) {
+
+		if (!isResidentAlreadyOnList(this.residentRepository.findAll(), resident)) {
 			userService.create(resident);
+		} else {
+			throw new DuplicatedResidentException("O morador " + resident.getFirstName() + " " + resident.getLastName()
+					+ " com CPF " + resident.getCpf() + " já existe na lista!");
 		}
-		
+
 		resident.setAge(calculateAge(resident.getBornDate(), LocalDate.now()));
-		
+
 		try {
 			resident = this.residentRepository.save(resident);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return resident;
 	}
 	
 	private int calculateAge(LocalDate bornDate, LocalDate currentDate) {
@@ -137,13 +113,12 @@ public class ResidentService {
 
 	public Boolean delete(Integer id) {
 		if (id == null) {
-			throw new NullResidentException("O morador está nulo!");
+			throw new NullResidentException("O morador que você tentou apagar está nulo!");
 		}
 		
 		Boolean sucessfullDeleted = false;
 		
 		if(this.residentRepository.existsById(id)) {
-			//this.userService.delete(this.residentRepository.getById(id).getUser());
 			this.residentRepository.deleteById(id);
 			sucessfullDeleted = true;
 			return sucessfullDeleted;
@@ -154,10 +129,7 @@ public class ResidentService {
 		
 	}
 	
-	 public boolean hasValidPassword(String password) {
-	        final Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
-	        return pattern.matcher(password).matches();
-	 }
+
 
 	public List<Resident> getResidentByAge(Integer age) {
 		

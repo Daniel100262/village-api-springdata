@@ -27,12 +27,13 @@ import com.devinhouse.village.repositories.UserCredentialRepository;
 @Service
 public class UserService implements UserDetailsService {
 
+	
 	private UserCredentialRepository userRepository;
 	
 	private UserRoleService userRoleService;
 
 	
-	
+	@Autowired
 	public UserService(UserCredentialRepository userRepository, UserRoleService userRoleService) {
 		this.userRepository = userRepository;
 		this.userRoleService = userRoleService;
@@ -84,7 +85,7 @@ public class UserService implements UserDetailsService {
 			throw new IllegalArgumentException("O usuario contém parâmetros nulos!");
 		}
 
-		if (!isPasswordValid(resident.getUser().getPassword())) {
+		if (!resident.getUser().hasValidPassword()) {
 			throw new IllegalArgumentException("O usuario contém uma senha fora dos padrões estabelecidos!");
 		}
 
