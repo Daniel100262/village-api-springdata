@@ -38,6 +38,10 @@ The following tools were used in the construction of the project:
 ## ☰ Logical Modeling
 ![image](https://user-images.githubusercontent.com/6551994/156144425-df3660d7-26be-4cc1-b0c8-4d5547bf77ba.png)
 
+## ☰ RabbitMQ Queue Modeling 
+
+![image](https://user-images.githubusercontent.com/6551994/156877533-7e7b97a6-7589-40f2-b58d-d201f582fc91.png)
+
 
 ## ✅ Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
