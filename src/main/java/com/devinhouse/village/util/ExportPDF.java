@@ -116,10 +116,10 @@ public class ExportPDF {
 		table.addCell(report.getInitialBudget().toString());
 
 		table.addCell("Custo de todos os moradores somados");
-		table.addCell(report.getVillagersCostSum().toString());
+		table.addCell(report.getResidentsCostSum().toString());
 
 		table.addCell("Morador com maior custo");
-		table.addCell(report.getVillagerWithHigherCost());
+		table.addCell(report.getResidentWithHigherCost());
 
 	}
 }

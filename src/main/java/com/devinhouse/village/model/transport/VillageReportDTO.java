@@ -11,8 +11,8 @@ public class VillageReportDTO implements Serializable{
 	
 	private final Float cost;
     private final Float initialBudget;
-    private final BigDecimal villagersCostSum;
-    private final String villagerWithHigherCost;
+    private final BigDecimal residentsCostSum;
+    private final String residentWithHigherCost;
     
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final String reportEmailDestination;
@@ -23,8 +23,8 @@ public class VillageReportDTO implements Serializable{
 		super();
 		this.cost = cost;
 		this.initialBudget = initialBudget;
-		this.villagersCostSum = villagersCostSum;
-		this.villagerWithHigherCost = villagerWithHigherCost;
+		this.residentsCostSum = villagersCostSum;
+		this.residentWithHigherCost = villagerWithHigherCost;
 		this.reportEmailDestination = reportEmailDestination;
 	}
 	
@@ -33,8 +33,8 @@ public class VillageReportDTO implements Serializable{
 		super();
 		this.cost = cost;
 		this.initialBudget = initialBudget;
-		this.villagersCostSum = villagersCostSum;
-		this.villagerWithHigherCost = villagerWithHigherCost;
+		this.residentsCostSum = villagersCostSum;
+		this.residentWithHigherCost = villagerWithHigherCost;
 		this.reportEmailDestination = null;
 	}
 	
@@ -48,10 +48,10 @@ public class VillageReportDTO implements Serializable{
 	public Float getInitialBudget() {
 		return initialBudget;
 	}
-	public BigDecimal getVillagersCostSum() {
-		return villagersCostSum;
+	public BigDecimal getResidentsCostSum() {
+		return residentsCostSum;
 	}
-	public String getVillagerWithHigherCost() {
-		return villagerWithHigherCost;
+	public String getResidentWithHigherCost() {
+		return residentWithHigherCost;
 	}
 }

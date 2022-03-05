@@ -1,6 +1,5 @@
 package com.devinhouse.village.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,7 +110,7 @@ public class UserService implements UserDetailsService {
 		
 	}
 
-	public void updateUser(UserCredential user, String newPassword) throws SQLException {
+	public void updateUser(UserCredential user, String newPassword) {
 		userRepository.save(user);
 	}
 

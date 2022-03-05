@@ -5,6 +5,7 @@ import java.util.Random;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.devinhouse.village.exception.NullUserException;
 import com.devinhouse.village.model.UserCredential;
 import com.devinhouse.village.repositories.UserCredentialRepository;
 
@@ -16,24 +17,27 @@ public class AuthService {
 	private EmailService emailService;
 	private UserCredentialRepository userRepository;
 	
-	public AuthService(UserService userService, PasswordEncoder passwordEncoder, EmailService emailService) {
+	public AuthService(UserService userService, PasswordEncoder passwordEncoder, EmailService emailService, UserCredentialRepository userRepository) {
 		this.userService = userService;
 		this.passwordEncoder = passwordEncoder;
 		this.emailService = emailService;
 	}
 	
-	public void sendNewPass(String email) throws Exception {
+	public void sendNewPass(String email) {
 		UserCredential user = userRepository.getUserByEmail(email);
-		if(user == null) {
-			throw new Exception("E-mail não encontrado!");
+		
+		if(user != null) {
+			String newPass = generatePassword();
+			String encodePass = passwordEncoder.encode(newPass);
+			user.setPassword(encodePass);
+			
+			userService.updateUser(user,newPass);
+			
+			emailService.sendNewPassword(user, newPass);
+		} else {
+			throw new NullUserException("Nenhum usuário com este e-mail não encontrado!");
 		}
-		String newPass = generatePassword();
-		String encodePass = passwordEncoder.encode(newPass);
-		user.setPassword(encodePass);
 		
-		userService.updateUser(user,newPass);
-		
-		emailService.sendNewPassword(user, newPass);
 	}
 	
 	private static String generatePassword() {
@@ -43,7 +47,7 @@ public class AuthService {
 	   public static char[] generatePassword(int length) {
 		      String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		      String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-		      String specialCharacters = "!@#$";
+		      String specialCharacters = "!@#$*&-=+";
 		      String numbers = "1234567890";
 		      String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
 		      Random random = new Random();
@@ -54,7 +58,12 @@ public class AuthService {
 		      password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
 		      password[3] = numbers.charAt(random.nextInt(numbers.length()));
 		   
-		      for(int i = 4; i< length ; i++) {
+		      int ii = 1;
+		      
+		      for(int i = 4; i < length ; i++) {
+		    	  
+		    	  System.out.println("Passou "+ii+" vezes, i="+i);
+		    	  ii++;
 		         password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
 		      }
 		      return password;

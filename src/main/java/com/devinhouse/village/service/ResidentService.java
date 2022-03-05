@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullResidentException;
-import com.devinhouse.village.exception.NullUserException;
-import com.devinhouse.village.exception.NullVillageBudgetException;
 import com.devinhouse.village.exception.ResidentNotFoundException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.transport.VillageReportDTO;
@@ -155,11 +152,11 @@ public class ResidentService {
 	                BigDecimal::add
 	        );
 	        final Float cost = budgetOfVillage - villageTotalCost.floatValue();
-	        final Resident villagerWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
+	        final Resident residentWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
 
 
-	        final String villagerName = String.format("%s %s", villagerWithHigherCost.getFirstName(),villagerWithHigherCost.getLastName());
-	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, villagerName, emailDestination);
+	        final String residentName = String.format("%s %s", residentWithHigherCost.getFirstName(),residentWithHigherCost.getLastName());
+	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, residentName, emailDestination);
 	
 	}
 	
@@ -171,11 +168,11 @@ public class ResidentService {
 	                BigDecimal::add
 	        );
 	        final Float cost = budgetOfVillage - villageTotalCost.floatValue();
-	        final Resident villagerWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
+	        final Resident residentWithHigherCost = residents.stream().max(Resident.compareByIncome).orElse(null);
 
 
-	        final String villagerName = String.format("%s %s", villagerWithHigherCost.getFirstName(),villagerWithHigherCost.getLastName());
-	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, villagerName);
+	        final String residentName = String.format("%s %s", residentWithHigherCost.getFirstName(),residentWithHigherCost.getLastName());
+	        return new VillageReportDTO(cost, budgetOfVillage, villageTotalCost, residentName);
 	
 	}
 

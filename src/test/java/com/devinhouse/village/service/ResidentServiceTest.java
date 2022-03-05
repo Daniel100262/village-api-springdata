@@ -7,12 +7,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -20,8 +20,9 @@ import com.devinhouse.village.exception.DuplicatedResidentException;
 import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.exception.ResidentNotFoundException;
 import com.devinhouse.village.model.Resident;
-import com.devinhouse.village.model.UserCredential;
+import com.devinhouse.village.model.transport.VillageReportDTO;
 import com.devinhouse.village.repositories.ResidentRepository;
+import com.devinhouse.village.utils.ResidentUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,17 +33,20 @@ public class ResidentServiceTest {
     private ResidentRepository residentRepository;
     private UserService userService;
     
+    @Value("${village.budget}")
+	private Float budgetOfVillage;
+    
     @BeforeEach
     public void beforeEach() {
     	this.residentRepository = mock(ResidentRepository.class);
     	this.userService = mock(UserService.class);
-    	this.residentService = new ResidentService(userService, residentRepository);
+    	this.residentService = new ResidentService(residentRepository, userService, budgetOfVillage);
     }
 
     @Test
     void ShouldReturnAllResidents() {
     	
-    	List<Resident> expectedResidentsMock = residentsFullfilledWithUser;
+    	List<Resident> expectedResidentsMock = ResidentUtils.residentsFullfilledWithUser;
     	
     	when(residentRepository.findAllFiltered()).thenReturn(expectedResidentsMock);	
     	
@@ -55,7 +59,7 @@ public class ResidentServiceTest {
     void ShouldReturnResidentById() {
     	Integer residentIdOnMock = 0;
     	Integer expectedResidentId = 1;
-    	List<Resident> mockResidents = residentsFullfilledWithUser;
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
     	
     	when(residentRepository.findByIdFiltered(expectedResidentId)).thenReturn(List.of(mockResidents.get(residentIdOnMock)));
     	
@@ -83,7 +87,7 @@ public class ResidentServiceTest {
     
     @Test
     void ShouldCreateResident() {
-    	List<Resident> mockResidents = residentsFullfilledWithUser;
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
     	Resident expectedResident = mockResidents.get(0);
     	
     	when(residentRepository.save(expectedResident)).thenReturn(expectedResident);
@@ -96,7 +100,7 @@ public class ResidentServiceTest {
 	
     @Test
     void ShouldCalculateAgeOfResident() {
-    	List<Resident> mockResidents = residentsFullfilledWithUser;
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
     	Resident expectedResident = mockResidents.get(0);
     	Integer expectedAgeOfResident = expectedResident.getAge();
     	
@@ -112,7 +116,7 @@ public class ResidentServiceTest {
     
     @Test
     void ShouldSayThatResidentIsAlreadyOnList() {
-    	List<Resident> mockResidents = residentsFullfilledWithUser;
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
     	Resident expectedResident = mockResidents.get(0);
     	
     	when(residentRepository.findAll()).thenReturn(mockResidents);
@@ -128,7 +132,7 @@ public class ResidentServiceTest {
     
 	@Test
 	void ShoudReturnCorrectVillageCosts() {
-		List<Resident> mockResidents = residentsFullfilledWithUser;
+		List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
 		long expectedCostLong = mockResidents.stream()
 				.mapToLong(resident -> Long.parseLong(resident.getIncome().toString())).sum();
 
@@ -146,7 +150,7 @@ public class ResidentServiceTest {
 	@Test
 	void ShouldReturnResidentByBornMonth() {
 		Integer month = 12;
-		List<Resident> mockResidents = residentsFullfilledWithUser;
+		List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
 
 		List<Resident> residentsDezember = mockResidents.stream()
 				.filter(resident -> resident.getBornDate().getMonthValue() == month).collect(Collectors.toList());
@@ -172,7 +176,7 @@ public class ResidentServiceTest {
     
     @Test
 	void ShouldReturnResidentByName() {
-    	List<Resident> mockResidents = residentsFullfilledWithUser;
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
     	String name = mockResidents.get(0).getFirstName();
     	List<Resident> residentsWithName = mockResidents.stream()
 				.filter(resident -> resident.getFirstName().equals(name)).collect(Collectors.toList());
@@ -220,17 +224,64 @@ public class ResidentServiceTest {
     	assertTrue(exception.getMessage().contains("O morador que você tentou apagar está nulo!"));
     }
     
-   private final List<Resident> residentsFullfilledWithUser =  
-	    List.of(
-			new Resident(1, "Jasmine ", "Benjamin", 47, LocalDate.parse("1974-03-19"), BigDecimal.valueOf(1500), "15881077016", new UserCredential("jarmine.benjamin@gmail.com", "iJwQ@194eMeI7a*Z"), "ADMIN", "jarmine.benjamin@gmail.com"),
-    		new Resident(2, "Delilah", "Blackwell", 40, LocalDate.parse("1982-03-08"), BigDecimal.valueOf(1800), "94405573034", new UserCredential("delilah.blackwell@outlook.com", "iFIvjzO#hNy!qflT"), "USER", "delilah.blackwell@outlook.com"),
-    		new Resident(3, "Scott", "England", 23, LocalDate.parse("1999-05-16"), BigDecimal.valueOf(2500), "19964520026", new UserCredential("dscott.england@yahoo.com", "OaFR&P!pgzVpowHd"), "ADMIN", "scott.england@yahoo.com"),
-    		new Resident(4, "Nero", "Bradford", 26, LocalDate.parse("1996-08-24"), BigDecimal.valueOf(2800), "61895597005", new UserCredential("nero.bradford@hotmail.com", "CboPrnT#a3o@vssC"), "ADMIN", "nero.bradford@hotmail.com"),
-    		new Resident(5, "Ralph", "Holt", 45, LocalDate.parse("1977-12-13"), BigDecimal.valueOf(3500), "27606479003", new UserCredential("ralph.holt@aol.com", "*z9s@#mEH^%7Bnuk"), "USER", "ralph.holt@aol.com"),
-    		new Resident(6, "Garrett", "Henson", 30, LocalDate.parse("1992-01-03"), BigDecimal.valueOf(3800), "04315386030", new UserCredential("garrett.henson@icloud.com", "7XZ0^MwFLdGza@BP"), "ADMIN", "garrett.henson@icloud.com"),
-    		new Resident(7, "Angela", "Grimes", 65, LocalDate.parse("1957-01-05"), BigDecimal.valueOf(4500), "24351281006", new UserCredential("angela.grimes@live.com", "bxM5Ku$sVWoYr#ZM"), "USER", "angela.grimes@live.com")
-    	);
+    @Test
+    void ShouldGenerateReportWithoutEmail() {
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
+    	when(residentRepository.findAll()).thenReturn(mockResidents);
+    	
+    	BigDecimal expectedVillageTotalCost = mockResidents.stream().reduce(
+                BigDecimal.ZERO,(accumulator, resident) -> resident.getIncome().add((accumulator)),
+                BigDecimal::add
+        );
+    	
+    	
+    	Float expectedCost = budgetOfVillage - expectedVillageTotalCost.floatValue();
+    	Resident expectedResidentWithHigherCost = mockResidents.stream().max(Resident.compareByIncome).orElse(null);
+    	String expectedResidentWithHigherCostName = expectedResidentWithHigherCost.getFirstName()+" "+expectedResidentWithHigherCost.getLastName();
+ 
+    	VillageReportDTO generatedReport = residentService.genereteReport();
+    	
+    	BigDecimal villageTotalCost = generatedReport.getResidentsCostSum();
+    	Float cost = generatedReport.getCost();
+    	String residentWithHigherCost = generatedReport.getResidentWithHigherCost();
+    	
+    	
+    	
+       	assertEquals(expectedVillageTotalCost, villageTotalCost);   	
+    	assertEquals(expectedCost, cost);
+    	assertEquals(expectedResidentWithHigherCostName, residentWithHigherCost);
+ 
+    }
     
+    @Test
+    void ShouldGenerateReportWithEmail() {
+    	String expectedEmail = "admin@company.com";
+    	List<Resident> mockResidents = ResidentUtils.residentsFullfilledWithUser;
+    	when(residentRepository.findAll()).thenReturn(mockResidents);
+    	
+    	BigDecimal expectedVillageTotalCost = mockResidents.stream().reduce(
+                BigDecimal.ZERO,(accumulator, resident) -> resident.getIncome().add((accumulator)),
+                BigDecimal::add
+        );
+    	
+    	
+    	Float expectedCost = budgetOfVillage - expectedVillageTotalCost.floatValue();
+    	Resident expectedResidentWithHigherCost = mockResidents.stream().max(Resident.compareByIncome).orElse(null);
+    	String expectedResidentWithHigherCostName = expectedResidentWithHigherCost.getFirstName()+" "+expectedResidentWithHigherCost.getLastName();
+    	
+    	VillageReportDTO generatedReport = residentService.genereteReport(expectedEmail);
+    	
+    	BigDecimal villageTotalCost = generatedReport.getResidentsCostSum();
+    	Float cost = generatedReport.getCost();
+    	String residentWithHigherCost = generatedReport.getResidentWithHigherCost();
+    	String email = generatedReport.getReportEmailDestination();
+    	
+    	
+       	assertEquals(expectedVillageTotalCost, villageTotalCost);   	
+    	assertEquals(expectedCost, cost);
+    	assertEquals(expectedResidentWithHigherCostName, residentWithHigherCost);
+    	assertEquals(expectedEmail, email);
+    }
    
 }
 
