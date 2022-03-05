@@ -1,8 +1,6 @@
 package com.devinhouse.village.service;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.persistence.EntityExistsException;
 
@@ -16,7 +14,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.devinhouse.village.exception.DuplicatedUserException;
-import com.devinhouse.village.exception.NullResidentException;
 import com.devinhouse.village.exception.NullUserException;
 import com.devinhouse.village.model.Resident;
 import com.devinhouse.village.model.UserCredential;
@@ -57,16 +54,14 @@ public class UserService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		UserCredential user = null;
-		 try {
 		user = userRepository.getUserByEmail(email);
 
-		} catch (NullPointerException e) {
-			throw new NullResidentException("Login invalido! Nenhum morador encontrado com o e-mail: "+email);
+		if (user != null) {
+			return new UserSpringSecurity(user.getEmail(), user.getPassword(), user.getUserRoles());
+		} else {
+			throw new UsernameNotFoundException("Login invalido! Nenhum morador encontrado com o e-mail: "+email);
 		}
-		if (user == null) {
-			throw new UsernameNotFoundException(email);
-		}
-		return new UserSpringSecurity(user.getEmail(), user.getPassword(), user.getUserRoles());
+
 	}
 
 	public static UserSpringSecurity authenticated() {
@@ -79,24 +74,24 @@ public class UserService implements UserDetailsService {
 	}
 
 	public void create(Resident resident) {
-		if (resident.getUser().getEmail() == null || resident.getUser().getPassword() == null
-				|| resident.getUser() == null||resident.getUser().getUserRoles() == null) {
-			throw new IllegalArgumentException("O usuario contém parâmetros nulos!");
-		}
 
-		if (!resident.getUser().hasValidPassword()) {
-			throw new IllegalArgumentException("O usuario contém uma senha fora dos padrões estabelecidos!");
-		}
+		try {
+			if (resident.getUser().getEmail() == null || resident.getUser().getPassword() == null
+					|| resident.getUser().getUserRoles() == null) {
+				throw new IllegalArgumentException("O usuario contém parâmetros nulos!");
+			}
 
-		if (resident.getUser().equals(null)) {
-
+			if (!resident.getUser().hasValidPassword()) {
+				throw new IllegalArgumentException("O usuario contém uma senha fora dos padrões estabelecidos!");
+			}
+		} catch (NullPointerException e) {
 			StringBuilder message = new StringBuilder();
 			message.append("O usuário que estava sendo criado para o morador ").append(resident.getFirstName())
 					.append(" ").append(resident.getLastName()).append(" não existe!");
 
 			throw new NullUserException(message.toString());
 		}
-		
+
 		BCryptPasswordEncoder pe = new BCryptPasswordEncoder();
 
 		try {
@@ -105,20 +100,13 @@ public class UserService implements UserDetailsService {
 			UserCredential createdUser = this.userRepository.save(resident.getUser());
 			resident.setUser(createdUser);
 		} catch (EntityExistsException e) {
-			throw new DuplicatedUserException("O usuário com e-mail "+resident.getUser().getEmail()+ "já existe no banco de dados!");
+			throw new DuplicatedUserException(
+					"O usuário com e-mail " + resident.getUser().getEmail() + "já existe no banco de dados!");
 		}
-		
+
 	}
 
-	public void updateUser(UserCredential user, String newPassword) {
-		userRepository.save(user);
+	public UserCredential updateUser(UserCredential user, String newPassword) {
+		return userRepository.save(user);
 	}
-
-	public Boolean isPasswordValid(String password) {
-		Pattern pattern = java.util.regex.Pattern
-				.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*@#$%^&+=])(?=\\S+$).{8,}$");
-		Matcher matcher = pattern.matcher(password);
-		return matcher.matches();
-	}
-
 }

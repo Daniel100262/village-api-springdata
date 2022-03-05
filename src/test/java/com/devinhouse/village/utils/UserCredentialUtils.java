@@ -9,7 +9,7 @@ public class UserCredentialUtils {
 	
 	public static final List<UserCredential> userCredentialsFilled = List.of(
 		new UserCredential("jarmine.benjamin@gmail.com", "iJwQ@194eMeI7a*Z", List.of(new UserRole(1, "ADMIN"))),
-		new UserCredential("delilah.blackwell@outlook.com", "iFIvjzO#hNy!qflT", List.of(new UserRole(1, "USER"))),
+		new UserCredential("delilah.blackwell@outlook.com", "*FC@MgsiQr9Rr@uCUTz", List.of(new UserRole(1, "USER"))),
 		new UserCredential("escott.england@yahoo.com", "OaFR&P!pgzVpowHd", List.of(new UserRole(1, "ADMIN"))),
 		new UserCredential("nero.bradford@hotmail.com", "CboPrnT#a3o@vssC", List.of(new UserRole(1, "ADMIN"))),
 		new UserCredential("ralph.holt@aol.com", "*z9s@#mEH^%7Bnuk", List.of(new UserRole(1, "USER"))),
