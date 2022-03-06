@@ -11,21 +11,38 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailServicePDF {
-	@Autowired
+	
 	private JavaMailSender mailSender;
 
+	@Autowired
+	public EmailServicePDF(JavaMailSender mailSender) {
+		this.mailSender = mailSender;
+	}
 
-	public void sendMailWithAttachment(String emailDestination, String subject, String body, byte[] reportToAttach) {
+
+
+	public void sendMailWithAttachment(String emailDestination, String subject, String body, byte[] reportToAttach) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
 	    try {
-	        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	       
+	    	MimeMessageHelper helper = new MimeMessageHelper(message, true);
 	        helper.setFrom("villagedevinhouse@gmail.com");
 	        helper.setTo(emailDestination);
 	        helper.setSubject(subject);
 	        helper.setText(body);
 	        helper.addAttachment("report.pdf", new ByteArrayResource(reportToAttach));
+	       
 	        mailSender.send(message);
 	    } catch (MessagingException e) {
+	    	
+	    	MimeMessageHelper helper = new MimeMessageHelper(message, false);
+	        helper.setFrom("villagedevinhouse@gmail.com");
+	        helper.setTo(emailDestination);
+	        helper.setSubject("Falha ao enviar o relatório");
+	        helper.setText("Houve um problema ao entregar o seu relatório!");
+	        helper.addAttachment("report.pdf", new ByteArrayResource(reportToAttach));
+	        mailSender.send(message);
+	        
 	        e.printStackTrace();
 	    }
 		

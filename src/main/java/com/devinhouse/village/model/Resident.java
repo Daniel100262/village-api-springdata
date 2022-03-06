@@ -64,7 +64,7 @@ public class Resident implements Serializable {
 	
 	public Resident(Integer id, String firstName, String lastName) {
 		super();
-		this.id = id;
+		this.id = id;		
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -92,10 +92,22 @@ public class Resident implements Serializable {
 		this.cpf = cpf;
 		this.email = email;
 	}
+	
+	public Resident(Integer id, String firstName, String lastName, Integer age, LocalDate bornDate, BigDecimal income,
+			String cpf, UserCredential user, String role, String email) {
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.age = age;
+		this.bornDate = bornDate;
+		this.income = income;
+		this.cpf = cpf;
+		this.user = user;
+		this.role = role;
+		this.email = email;
+	}
 
-	
-	
-	
 	public String getEmail() {
 		return email;
 	}
@@ -164,4 +176,5 @@ public class Resident implements Serializable {
 	public static final Comparator<Resident> compareByIncome = (Resident r1, Resident r2) -> {
         return r1.getIncome().compareTo(r2.getIncome());
     };
+
 }

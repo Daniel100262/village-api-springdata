@@ -12,15 +12,24 @@ import com.devinhouse.village.util.ExportPDF;
 @Service
 public class RabbitmqService {
 	
-	@Autowired
 	private EmailServicePDF emailServicePDF;
 	
-	@Autowired
 	ResidentService residentService;
 	
-	@Autowired
 	UserCredentialRepository userCredentialRepository;
 	
+	
+	@Autowired
+	public RabbitmqService(EmailServicePDF emailServicePDF, ResidentService residentService,
+			UserCredentialRepository userCredentialRepository) {
+		super();
+		this.emailServicePDF = emailServicePDF;
+		this.residentService = residentService;
+		this.userCredentialRepository = userCredentialRepository;
+	}
+
+
+
 	public void sendReportByEmail(String emailDestination, VillageReportDTO reportDTO) throws Exception {
 		
 		if(emailDestination.isEmpty()) {

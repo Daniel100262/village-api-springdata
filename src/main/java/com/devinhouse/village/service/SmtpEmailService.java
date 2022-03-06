@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import com.devinhouse.village.model.UserCredential;
-import com.lowagie.text.pdf.PdfDocument;
-
 public class SmtpEmailService extends AbstractEmailService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SmtpEmailService.class);
@@ -24,12 +21,6 @@ public class SmtpEmailService extends AbstractEmailService {
 		LOG.info("Enviando email...");
 		mailSender.send(message);
 		LOG.info("Email enviado");
-	}
-
-	@Override
-	public void sendPDFReport(UserCredential user, PdfDocument report) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

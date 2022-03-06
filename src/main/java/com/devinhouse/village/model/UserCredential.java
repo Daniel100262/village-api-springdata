@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -151,5 +152,10 @@ public class UserCredential implements Serializable {
 		
 		return true;
 	}
+	
+	 public boolean hasValidPassword() {
+	        final Pattern pattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+	        return pattern.matcher(this.password).matches();
+	 }
 
 }
